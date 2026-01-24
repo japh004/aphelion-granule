@@ -116,6 +116,7 @@ export default function Hero() {
                     {/* Dark overlays */}
                     <div className="absolute inset-0 z-[5] pointer-events-none" style={{ background: 'radial-gradient(circle at 70% 50%, rgba(0,0,0,0.2), rgba(0,0,0,0.9))' }}></div>
                     <div className="absolute inset-0 z-[6] pointer-events-none" style={{ background: 'radial-gradient(circle at 95% 85%, rgba(10,15,20,0.95) 0%, rgba(10,15,20,0.4) 40%, transparent 70%)' }}></div>
+                    <div className="absolute inset-0 z-[7] pointer-events-none" style={{ background: 'radial-gradient(circle at 0% 100%, rgba(0,0,0,0.7) 0%, transparent 50%)' }}></div>
                     <div className="absolute inset-0 z-[8] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 60%, rgba(255,193,7,0.08) 0%, transparent 45%)' }}></div>
 
                     {/* Left headlight cone */}
@@ -188,7 +189,7 @@ export default function Hero() {
             )}
 
             {/* Synced with Variant */}
-            <div className="hero-content relative z-20 container-wide pt-8 md:pt-16 pb-4 md:px-12 flex flex-col md:items-center text-center">
+            <div className="hero-content relative z-20 container-wide pt-8 md:pt-16 pb-4 md:px-12 flex flex-col md:items-left text-left">
                 <div className="max-w-2xl space-y-4 md:flex md:flex-col md:items-center">
                     <div className="flex flex-wrap items-center gap-4 text-sm font-medium tracking-wide">
                         <div className={`flex items-center gap-2 backdrop-blur-sm px-3 py-1.5 rounded-full border transition-colors ${isLight ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'}`}>
