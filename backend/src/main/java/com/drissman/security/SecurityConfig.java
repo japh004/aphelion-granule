@@ -39,6 +39,8 @@ public class SecurityConfig {
                         // Public endpoints
                         .pathMatchers("/api/auth/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/schools/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/offers/**").permitAll()
                         .pathMatchers("/api/health").permitAll()
                         // Protected endpoints
                         .anyExchange().authenticated())
