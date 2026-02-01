@@ -174,7 +174,7 @@ export default function Hero() {
                         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
                         style={{
                             backgroundImage: 'url(/hero-light.png)',
-                            backgroundPosition: 'center right',
+                            backgroundPosition: '80% -60%',
                         }}
                     />
 
@@ -204,8 +204,10 @@ export default function Hero() {
 
                     {/* UNIFIED GRADIENT WRAPPER - Theme aware */}
                     <div className="space-y-4" style={{
-                        backgroundImage: isLight ? lightModeGradient : texturedGradient,
-                        backgroundSize: '50px 50px, 100% 100%',
+                        backgroundImage: isLight
+                            ? `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='4'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E"), linear-gradient(135deg, #d97706 0%, #b45309 50%, #92400e 100%)`
+                            : texturedGradient,
+                        backgroundSize: '60px 60px, 100% 100%',
                         backgroundBlendMode: 'overlay, normal',
                         WebkitBackgroundClip: 'text',
                         backgroundClip: 'text',
@@ -216,9 +218,23 @@ export default function Hero() {
                             COMMENCE<br />ICI.
                         </h1>
 
-                        <p className="text-xl md:text-2xl font-light tracking-tight max-w-md leading-snug">
+                        <p className="text-xl md:text-2xl font-light tracking-tight max-w-md leading-snug" style={{
+                            backgroundImage: isLight
+                                ? `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='4'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.4'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.1'/%3E%3C/svg%3E"), linear-gradient(135deg, #475569 0%, #334155 100%)`
+                                : 'none',
+                            backgroundSize: isLight ? '60px 60px, 100% 100%' : undefined,
+                            backgroundBlendMode: isLight ? 'overlay, normal' : undefined,
+                            WebkitBackgroundClip: isLight ? 'text' : undefined,
+                            backgroundClip: isLight ? 'text' : undefined,
+                            color: isLight ? 'transparent' : undefined,
+                        }}>
                             Comparez. Choisissez. Réservez.<br />
-                            <span className="text-base md:text-lg opacity-80 font-normal mt-2 block">La route vers votre liberté, simplifiée.</span>
+                            <span className={`text-base md:text-lg font-normal mt-2 block ${isLight ? '' : 'opacity-80'}`} style={{
+                                color: isLight ? '#64748b' : undefined,
+                                backgroundImage: 'none',
+                                WebkitBackgroundClip: 'unset',
+                                backgroundClip: 'unset',
+                            }}>La route vers votre liberté, simplifiée.</span>
                         </p>
                     </div>
                 </div>

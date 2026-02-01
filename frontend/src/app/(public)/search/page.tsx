@@ -7,6 +7,7 @@ import { SchoolCard } from "@/components/search/school-card";
 import { MapWrapper } from "@/components/map/map-wrapper";
 import { SearchFilters } from "@/components/search/search-filters";
 import { useSchools, useAuth } from "@/hooks";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface FilterState {
     city: "Yaoundé" | "Douala" | "Tous";
@@ -97,6 +98,8 @@ export default function SearchPage() {
                         <Link href="/code" className="text-sm text-mist hover:text-signal transition-colors">Code</Link>
                         <Link href="/partners" className="text-sm text-mist hover:text-signal transition-colors">Partenaires</Link>
 
+                        <ThemeToggle />
+
                         {isAuthenticated ? (
                             <Link href="/dashboard" className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-snow hover:border-signal/30 transition-all">
                                 Dashboard
@@ -124,6 +127,9 @@ export default function SearchPage() {
                     <Link href="/code" onClick={() => setMenuOpen(false)} className="text-4xl font-black text-snow">Code</Link>
                     <Link href="/partners" onClick={() => setMenuOpen(false)} className="text-4xl font-black text-snow">Partenaires</Link>
                     <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="text-4xl font-black text-snow">Dashboard</Link>
+                    <div className="mt-4">
+                        <ThemeToggle />
+                    </div>
                 </div>
             </header>
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Hero from "./components/Hero";
 import StatsVariant2 from "./components/StatsVariant2";
 import WorkflowVariant from "./components/WorkflowVariant";
@@ -52,6 +53,10 @@ export default function Home() {
                             Partenaires
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-signal group-hover:w-full transition-all duration-300"></span>
                         </Link>
+
+                        {/* Theme Toggle */}
+                        <ThemeToggle />
+
                         <div className="flex items-center gap-3 pl-4 border-l border-white/10">
                             {isAuthenticated ? (
                                 <Link href="/dashboard" className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-snow hover:border-signal/30 transition-all">
@@ -87,6 +92,12 @@ export default function Home() {
                     <Link href="/search" onClick={() => setMenuOpen(false)} className="text-3xl font-bold text-snow hover:text-signal transition-colors">Auto-écoles</Link>
                     <Link href="/code" onClick={() => setMenuOpen(false)} className="text-3xl font-bold text-snow hover:text-signal transition-colors">Code</Link>
                     <Link href="/partners" onClick={() => setMenuOpen(false)} className="text-3xl font-bold text-snow hover:text-signal transition-colors">Partenaires</Link>
+
+                    {/* Theme Toggle Mobile */}
+                    <div className="mt-4">
+                        <ThemeToggle />
+                    </div>
+
                     <div className="flex flex-col items-center gap-4 mt-8 pt-8 border-t border-white/10">
                         <Link href="/login" onClick={() => setMenuOpen(false)} className="text-xl text-mist hover:text-snow transition-colors">Se connecter</Link>
                         <Link

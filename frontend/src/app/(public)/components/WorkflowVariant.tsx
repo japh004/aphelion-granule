@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MousePointerClick, CalendarCheck, Car } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -60,6 +61,8 @@ function ImageParticles() {
 
 export default function WorkflowVariant() {
     const sectionRef = useRef<HTMLDivElement>(null);
+    const { theme } = useTheme();
+    const isLight = theme === "light";
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -127,6 +130,7 @@ export default function WorkflowVariant() {
     const steps = [
         {
             img: "/assets/step-choose.png?v=final",
+            imgLight: "/assets/position.png",
             num: "1",
             title: "Choisissez",
             icon: MousePointerClick,
@@ -134,6 +138,7 @@ export default function WorkflowVariant() {
         },
         {
             img: "/assets/step-book.png?v=final",
+            imgLight: "/assets/agenda.png",
             num: "2",
             title: "Réservez",
             icon: CalendarCheck,
@@ -141,6 +146,7 @@ export default function WorkflowVariant() {
         },
         {
             img: "/assets/step-drive.png?v=final",
+            imgLight: "/assets/wheel.png",
             num: "3",
             title: "Conduisez",
             icon: Car,
@@ -149,9 +155,9 @@ export default function WorkflowVariant() {
     ];
 
     return (
-        <section ref={sectionRef} id="workflow" className="py-32 bg-asphalt relative overflow-hidden">
+        <section ref={sectionRef} id="workflow" className={`py-32 relative overflow-hidden ${isLight ? 'bg-slate-50' : 'bg-asphalt'}`}>
             {/* Section separator */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+            <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${isLight ? 'via-black/10' : 'via-white/10'} to-transparent`}></div>
 
             {/* Subtle background texture */}
             <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("/assets/noise.png")' }}></div>
@@ -162,13 +168,19 @@ export default function WorkflowVariant() {
             <div className="container-wide relative z-10">
                 {/* Header */}
                 <div className="text-center mb-24">
-                    <span className="inline-block py-1.5 px-4 rounded-full bg-white/5 border border-white/10 text-signal text-xs font-bold tracking-[0.2em] uppercase mb-6">
+                    <span className={`inline-block py-1.5 px-4 rounded-full text-signal text-xs font-bold tracking-[0.2em] uppercase mb-6 ${isLight ? 'bg-black/5 border border-black/10' : 'bg-white/5 border border-white/10'}`}>
                         Comment ça marche
                     </span>
                     <h2 className="text-4xl md:text-6xl font-black tracking-tight">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/50">
-                            Votre permis en 3 étapes
-                        </span>
+                        {isLight ? (
+                            <span className="text-slate-800">
+                                Votre permis en <span className="text-signal">3 étapes</span>
+                            </span>
+                        ) : (
+                            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/50">
+                                Votre permis en 3 étapes
+                            </span>
+                        )}
                     </h2>
                 </div>
 
@@ -206,11 +218,11 @@ export default function WorkflowVariant() {
                                     {/* Floating image with hover zoom */}
                                     <div className="animate-float relative z-10" style={{ animationDelay: `${i * 0.3}s` }}>
                                         <img
-                                            src={step.img}
+                                            src={isLight ? step.imgLight : step.img}
                                             alt={step.title}
                                             width={280}
                                             height={280}
-                                            className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)] rounded-lg transition-transform duration-500 ease-out group-hover:scale-110"
+                                            className={`object-contain rounded-lg transition-transform duration-500 ease-out group-hover:scale-110 ${isLight ? 'drop-shadow-[0_20px_40px_rgba(0,0,0,0.15)]' : 'drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]'}`}
                                         />
                                     </div>
                                 </div>
@@ -236,12 +248,12 @@ export default function WorkflowVariant() {
                                         <span className="text-signal font-black">{step.num}</span>
                                     </div>
 
-                                    <h3 className={`text-3xl md:text-4xl font-black mb-4 text-white flex items-center gap-3 transition-all duration-300 group-hover/text:text-signal ${i % 2 === 0 ? 'justify-center md:justify-start' : 'justify-center md:justify-end'}`}>
+                                    <h3 className={`text-3xl md:text-4xl font-black mb-4 flex items-center gap-3 transition-all duration-300 group-hover/text:text-signal ${isLight ? 'text-slate-800' : 'text-white'} ${i % 2 === 0 ? 'justify-center md:justify-start' : 'justify-center md:justify-end'}`}>
                                         <step.icon className="w-7 h-7 text-signal transition-transform duration-300 group-hover/text:scale-110" />
                                         {step.title}
                                     </h3>
 
-                                    <p className="text-mist text-base md:text-lg leading-relaxed max-w-sm mx-auto md:mx-0">
+                                    <p className={`text-base md:text-lg leading-relaxed max-w-sm mx-auto md:mx-0 ${isLight ? 'text-slate-600' : 'text-mist'}`}>
                                         {step.desc}
                                     </p>
                                 </div>

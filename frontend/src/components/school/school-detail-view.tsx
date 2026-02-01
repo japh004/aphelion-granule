@@ -11,6 +11,7 @@ import { ReviewForm } from "./review-form";
 import { MapPin, Star, Check, Menu, X, ArrowLeft, Shield } from "lucide-react";
 import { useReviews } from "@/hooks";
 import { useAuth } from "@/hooks";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SchoolDetailView({ school }: { school: any }) {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -69,6 +70,7 @@ export function SchoolDetailView({ school }: { school: any }) {
                             Partenaires
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-signal group-hover:w-full transition-all duration-300"></span>
                         </Link>
+                        <ThemeToggle />
 
                         {isAuthenticated ? (
                             <Link href="/dashboard" className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-snow hover:border-signal/30 transition-all">
@@ -91,6 +93,9 @@ export function SchoolDetailView({ school }: { school: any }) {
                     <Link href="/search" onClick={() => setMenuOpen(false)} className="text-3xl font-bold text-snow hover:text-signal transition-colors">Auto-écoles</Link>
                     <Link href="/code" onClick={() => setMenuOpen(false)} className="text-3xl font-bold text-snow hover:text-signal transition-colors">Code</Link>
                     <Link href="/partners" onClick={() => setMenuOpen(false)} className="text-3xl font-bold text-snow hover:text-signal transition-colors">Partenaires</Link>
+                    <div className="mt-4">
+                        <ThemeToggle />
+                    </div>
                 </div>
             </header>
 

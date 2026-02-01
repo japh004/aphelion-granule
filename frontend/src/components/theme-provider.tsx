@@ -8,6 +8,7 @@ interface ThemeContextType {
     theme: Theme;
     toggleTheme: () => void;
     setTheme: (theme: Theme) => void;
+    isTransitioning: boolean;
 }
 
 // Default context value for SSR
@@ -15,6 +16,7 @@ const defaultContext: ThemeContextType = {
     theme: "dark",
     toggleTheme: () => { },
     setTheme: () => { },
+    isTransitioning: false,
 };
 
 const ThemeContext = createContext<ThemeContextType>(defaultContext);
@@ -22,6 +24,7 @@ const ThemeContext = createContext<ThemeContextType>(defaultContext);
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setThemeState] = useState<Theme>("dark");
     const [mounted, setMounted] = useState(false);
+    const [isTransitioning, setIsTransitioning] = useState(false);
 
     // Load theme from localStorage on mount
     useEffect(() => {
@@ -50,22 +53,52 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }, [theme, mounted]);
 
     const toggleTheme = () => {
-        setThemeState(prev => prev === "dark" ? "light" : "dark");
+        // Start transition animation
+        setIsTransitioning(true);
+
+        // Change theme after a slight delay for smooth fade-out
+        setTimeout(() => {
+            setThemeState(prev => prev === "dark" ? "light" : "dark");
+        }, 150);
+
+        // End transition animation after fade completes
+        setTimeout(() => {
+            setIsTransitioning(false);
+        }, 500);
     };
 
     const setTheme = (newTheme: Theme) => {
-        setThemeState(newTheme);
+        setIsTransitioning(true);
+        setTimeout(() => {
+            setThemeState(newTheme);
+        }, 150);
+        setTimeout(() => {
+            setIsTransitioning(false);
+        }, 500);
     };
 
     const value: ThemeContextType = {
         theme,
         toggleTheme,
         setTheme,
+        isTransitioning,
     };
 
     return (
         <ThemeContext.Provider value={value}>
             {children}
+            {/* Smooth transition overlay */}
+            <div
+                className={`fixed inset-0 pointer-events-none z-[9999] transition-opacity duration-500 ${isTransitioning
+                        ? 'opacity-100'
+                        : 'opacity-0'
+                    }`}
+                style={{
+                    background: theme === 'dark'
+                        ? 'radial-gradient(circle at center, rgba(248,250,252,0.3) 0%, rgba(248,250,252,0.8) 100%)'
+                        : 'radial-gradient(circle at center, rgba(26,26,26,0.3) 0%, rgba(26,26,26,0.8) 100%)',
+                }}
+            />
         </ThemeContext.Provider>
     );
 }

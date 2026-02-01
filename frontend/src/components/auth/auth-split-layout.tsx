@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface AuthSplitLayoutProps {
     children: React.ReactNode;
@@ -49,17 +52,19 @@ export function AuthSplitLayout({ children, title, description, mode }: AuthSpli
 
             {/* RIGHT SIDE : FORM (Curved Overlap) */}
             <div className="w-full lg:w-1/2 relative bg-white/5 backdrop-blur-3xl shadow-2xl lg:rounded-l-[50px] border-l border-white/10 flex flex-col justify-center p-8 md:p-12 xl:p-24 z-20">
-                {/* Logo Mobile */}
-                <div className="lg:hidden absolute top-8 left-8">
+                {/* Logo Mobile + Theme Toggle */}
+                <div className="lg:hidden absolute top-8 left-8 right-8 flex justify-between items-center">
                     <Link href="/" className="inline-flex items-center gap-2 group">
                         <div className="h-9 w-9 rounded-full bg-gradient-to-br from-signal/30 to-signal/10 backdrop-blur-sm border border-signal/30 flex items-center justify-center">
                             <span className="text-signal font-black text-base">D</span>
                         </div>
                     </Link>
+                    <ThemeToggle />
                 </div>
 
                 {/* Desktop Top Nav (Logo + Toggle) */}
                 <div className="absolute top-12 right-12 hidden lg:flex items-center gap-6">
+                    <ThemeToggle />
                     <div className="bg-asphalt/50 backdrop-blur-md p-1.5 rounded-full border border-white/10 flex items-center">
                         <Link
                             href="/login"

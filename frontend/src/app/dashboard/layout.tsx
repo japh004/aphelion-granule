@@ -2,6 +2,7 @@
 
 import { DashboardSidebar, MobileSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { useAuth } from "@/hooks";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function DashboardLayout({
     children,
@@ -27,6 +28,7 @@ export default function DashboardLayout({
                     </div>
 
                     <div className="flex items-center gap-4 ml-auto">
+                        <ThemeToggle />
                         <div className="text-right hidden md:block">
                             <div className="text-sm font-medium text-snow">
                                 {user?.firstName} {user?.lastName}

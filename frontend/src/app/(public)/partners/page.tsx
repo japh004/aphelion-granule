@@ -6,6 +6,7 @@ import Image from "next/image";
 import { TrendingUp, Users, Shield, CheckCircle, BarChart3, Globe, Smartphone, Menu, X } from "lucide-react";
 import { PricingSection } from "@/components/partners/pricing-section";
 import { RegistrationPreview } from "@/components/partners/registration-preview";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function PartnersPage() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -77,6 +78,7 @@ export default function PartnersPage() {
                             Partenaires
                             <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-signal"></span>
                         </Link>
+                        <ThemeToggle />
                         <Link href="/search" className="bg-signal hover:bg-signal-dark text-asphalt font-bold py-2.5 px-6 rounded-xl text-sm shadow-[0_0_20px_rgba(255,193,7,0.25)] hover:shadow-[0_0_30px_rgba(255,193,7,0.4)] transition-all duration-300 hover:scale-[1.02]">
                             Commencer
                         </Link>
@@ -92,6 +94,9 @@ export default function PartnersPage() {
                     <Link href="/search" onClick={() => setMenuOpen(false)} className="text-3xl font-bold text-snow hover:text-signal transition-colors">Auto-écoles</Link>
                     <Link href="/code" onClick={() => setMenuOpen(false)} className="text-3xl font-bold text-snow hover:text-signal transition-colors">Code</Link>
                     <Link href="/partners" onClick={() => setMenuOpen(false)} className="text-3xl font-bold text-signal">Partenaires</Link>
+                    <div className="mt-4">
+                        <ThemeToggle />
+                    </div>
                 </div>
             </header>
 
