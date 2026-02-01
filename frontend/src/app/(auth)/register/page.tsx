@@ -20,6 +20,7 @@ function RegisterForm() {
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [schoolName, setSchoolName] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleRegister = async (e: React.FormEvent) => {
@@ -28,7 +29,7 @@ function RegisterForm() {
 
         try {
             const backendRole = role === 'partner' ? 'SCHOOL_ADMIN' : 'STUDENT';
-            await register(email, password, firstName, lastName, backendRole);
+            await register(email, password, firstName, lastName, backendRole, schoolName);
             toast.success("Compte créé avec succès !");
             router.push("/dashboard");
         } catch (error) {
@@ -131,7 +132,14 @@ function RegisterForm() {
                 {role === 'partner' && (
                     <div className="space-y-2">
                         <label htmlFor="school" className="text-sm font-medium text-snow">Nom de l&apos;auto-école</label>
-                        <input id="school" placeholder="Auto-École..." required className={inputClass} />
+                        <input
+                            id="school"
+                            placeholder="Auto-École..."
+                            required
+                            value={schoolName}
+                            onChange={(e) => setSchoolName(e.target.value)}
+                            className={inputClass}
+                        />
                     </div>
                 )}
 

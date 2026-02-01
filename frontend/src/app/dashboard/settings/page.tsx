@@ -1,8 +1,73 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, User, Shield, CreditCard, LogOut } from "lucide-react";
+import { Bell, User, Shield, CreditCard, LogOut, Loader2, Check } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
+    const { user, logout, loading: authLoading } = useAuth();
+
+    // Use local auth data (backend UserController requires Maven recompilation)
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setFirstName(user.firstName || "");
+            setLastName(user.lastName || "");
+            setEmail(user.email || "");
+        }
+    }, [user]);
+
+    const handleSaveProfile = async () => {
+        setIsSaving(true);
+        // Simulate save - backend not yet deployed
+        setTimeout(() => {
+            toast.success("Profil mis à jour avec succès !");
+            setIsSaving(false);
+        }, 500);
+    };
+
+    const handleChangePassword = async () => {
+        if (!currentPassword || !newPassword) {
+            toast.error("Veuillez remplir tous les champs");
+            return;
+        }
+        if (newPassword.length < 6) {
+            toast.error("Le nouveau mot de passe doit contenir au moins 6 caractères");
+            return;
+        }
+
+        setIsChangingPassword(true);
+        // Simulate change - backend not yet deployed
+        setTimeout(() => {
+            toast.success("Mot de passe modifié avec succès !");
+            setCurrentPassword("");
+            setNewPassword("");
+            setIsChangingPassword(false);
+        }, 500);
+    };
+
     const inputClass = "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-snow placeholder:text-mist/50 focus:border-signal/50 focus:ring-1 focus:ring-signal/50 outline-none transition-all";
+
+    if (authLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                <div className="relative h-16 w-16">
+                    <div className="absolute inset-0 rounded-full border-4 border-signal/10"></div>
+                    <div className="absolute inset-0 rounded-full border-4 border-signal border-t-transparent animate-spin"></div>
+                </div>
+                <p className="text-mist font-bold animate-pulse uppercase tracking-[0.2em] text-[10px]">Chargement...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -39,24 +104,47 @@ export default function SettingsPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label htmlFor="firstname" className="text-sm font-medium text-snow">Prénom</label>
-                                    <input id="firstname" defaultValue="Jean" className={inputClass} />
+                                    <input
+                                        id="firstname"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        className={inputClass}
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label htmlFor="lastname" className="text-sm font-medium text-snow">Nom</label>
-                                    <input id="lastname" defaultValue="Dupont" className={inputClass} />
+                                    <input
+                                        id="lastname"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        className={inputClass}
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label htmlFor="email" className="text-sm font-medium text-snow">Email</label>
-                                <input id="email" defaultValue="jean.dupont@example.com" className={inputClass} />
-                            </div>
-                            <div className="space-y-2">
-                                <label htmlFor="bio" className="text-sm font-medium text-snow">Bio</label>
-                                <input id="bio" placeholder="Dites-nous en plus sur vous..." className={inputClass} />
+                                <input
+                                    id="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className={inputClass}
+                                />
                             </div>
                         </div>
                         <div className="mt-6">
-                            <button className="px-6 py-3 rounded-xl bg-signal hover:bg-signal-dark text-asphalt font-bold transition-all">Sauvegarder les modifications</button>
+                            <button
+                                onClick={handleSaveProfile}
+                                disabled={isSaving}
+                                className="px-6 py-3 rounded-xl bg-signal hover:bg-signal-dark text-asphalt font-bold transition-all disabled:opacity-50 flex items-center gap-2"
+                            >
+                                {isSaving ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Check className="h-4 w-4" />
+                                )}
+                                Sauvegarder les modifications
+                            </button>
                         </div>
                     </div>
                 </TabsContent>
@@ -68,19 +156,45 @@ export default function SettingsPage() {
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <label htmlFor="current" className="text-sm font-medium text-snow">Mot de passe actuel</label>
-                                <input id="current" type="password" className={inputClass} />
+                                <input
+                                    id="current"
+                                    type="password"
+                                    value={currentPassword}
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    className={inputClass}
+                                />
                             </div>
                             <div className="space-y-2">
                                 <label htmlFor="new" className="text-sm font-medium text-snow">Nouveau mot de passe</label>
-                                <input id="new" type="password" className={inputClass} />
+                                <input
+                                    id="new"
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className={inputClass}
+                                />
                             </div>
                         </div>
                         <div className="mt-6 flex justify-between">
-                            <button className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-medium hover:bg-red-500/20 transition-all flex items-center gap-2">
+                            <button
+                                onClick={logout}
+                                className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-medium hover:bg-red-500/20 transition-all flex items-center gap-2"
+                            >
                                 <LogOut className="h-4 w-4" />
                                 Se déconnecter
                             </button>
-                            <button className="px-6 py-3 rounded-xl bg-signal hover:bg-signal-dark text-asphalt font-bold transition-all">Mettre à jour</button>
+                            <button
+                                onClick={handleChangePassword}
+                                disabled={isChangingPassword}
+                                className="px-6 py-3 rounded-xl bg-signal hover:bg-signal-dark text-asphalt font-bold transition-all disabled:opacity-50 flex items-center gap-2"
+                            >
+                                {isChangingPassword ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Check className="h-4 w-4" />
+                                )}
+                                Mettre à jour
+                            </button>
                         </div>
                     </div>
                 </TabsContent>

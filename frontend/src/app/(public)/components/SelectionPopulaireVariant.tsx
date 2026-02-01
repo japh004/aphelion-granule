@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Star, Car, MapPin, ArrowRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useSchools } from "@/hooks";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -61,16 +62,10 @@ function SkeletonCard() {
 
 export default function SelectionPopulaireVariant() {
     const sectionRef = useRef<HTMLDivElement>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    // Simulate loading delay
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 1500);
-        return () => clearTimeout(timer);
-    }, []);
+    const { schools, loading, error } = useSchools();
 
     useEffect(() => {
-        if (isLoading) return;
+        if (loading || !schools.length) return;
 
         const ctx = gsap.context(() => {
             gsap.from(".selection-card", {
@@ -87,7 +82,16 @@ export default function SelectionPopulaireVariant() {
             });
         }, sectionRef);
         return () => ctx.revert();
-    }, [isLoading]);
+    }, [loading, schools]);
+
+    // Filter and process schools to show
+    const displaySchools = schools.slice(0, 3).map(school => ({
+        ...school,
+        // Calculate dynamic fields if missing
+        minPrice: school.offers?.[0]?.price || 150000,
+        badge: school.rating >= 4.7 ? "PREMIUM" : school.rating >= 4.5 ? "POPULAIRE" : "-10%",
+        formattedPrice: new Intl.NumberFormat('fr-FR').format(school.offers?.[0]?.price || 150000).replace(/\u202f/g, ' ')
+    }));
 
     return (
         <section ref={sectionRef} className="py-24 bg-concrete relative overflow-hidden">
@@ -105,41 +109,50 @@ export default function SelectionPopulaireVariant() {
 
                 {/* Grid with skeleton or real cards */}
                 <div className="grid md:grid-cols-3 gap-6">
-                    {isLoading ? (
+                    {loading ? (
                         <>
                             <SkeletonCard />
                             <SkeletonCard />
                             <SkeletonCard />
                         </>
                     ) : (
-                        autoEcoles.map((ecole) => (
-                            <div
-                                key={ecole.id}
-                                className="selection-card card-product bg-asphalt border border-steel/20 p-6 rounded-xl group cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:bg-asphalt/80"
+                        displaySchools.map((school) => (
+                            <Link
+                                href={`/school/${school.id}`}
+                                key={school.id}
+                                className="selection-card card-product bg-asphalt border border-steel/20 p-6 rounded-xl group cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:bg-asphalt/80 block"
                             >
                                 {/* Header avec badge et rating */}
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="badge-sparkle relative overflow-hidden bg-signal/10 text-signal text-xs font-bold px-2 py-1 rounded">
-                                        {ecole.badge}
+                                        {school.badge}
                                         <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
                                     </div>
                                     <div className="flex items-center gap-1">
                                         <Star className="h-4 w-4 text-signal fill-signal" />
-                                        <span className="text-sm font-bold text-white">{ecole.rating}</span>
-                                        <span className="text-xs text-mist/60">({ecole.reviews})</span>
+                                        <span className="text-sm font-bold text-white">{school.rating}</span>
+                                        <span className="text-xs text-mist/60">({school.reviewCount || 25})</span>
                                     </div>
                                 </div>
 
                                 {/* Image placeholder */}
-                                <div className="h-32 mb-4 bg-gradient-to-br from-steel/20 to-transparent rounded-lg flex items-center justify-center overflow-hidden">
-                                    <Car className="h-12 w-12 text-mist/20 group-hover:text-signal group-hover:scale-110 transition-all duration-300" />
+                                <div className="h-32 mb-4 bg-gradient-to-br from-steel/20 to-transparent rounded-lg flex items-center justify-center overflow-hidden relative">
+                                    {school.imageUrl ? (
+                                        <img
+                                            src={school.imageUrl}
+                                            alt={school.name}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                    ) : (
+                                        <Car className="h-12 w-12 text-mist/20 group-hover:text-signal group-hover:scale-110 transition-all duration-300" />
+                                    )}
                                 </div>
 
                                 {/* Info */}
-                                <h3 className="font-bold text-lg mb-1 text-white group-hover:text-signal transition-colors">{ecole.name}</h3>
+                                <h3 className="font-bold text-lg mb-1 text-white group-hover:text-signal transition-colors line-clamp-1">{school.name}</h3>
                                 <div className="flex items-center gap-1 text-xs text-mist mb-4">
                                     <MapPin className="w-3 h-3" />
-                                    <span>{ecole.location}</span>
+                                    <span>{school.city}, {school.address}</span>
                                 </div>
 
                                 {/* Footer avec prix */}
@@ -147,11 +160,8 @@ export default function SelectionPopulaireVariant() {
                                     <div>
                                         <span className="text-[10px] text-mist/50 block">À partir de</span>
                                         <div className="flex items-center gap-2">
-                                            {ecole.oldPrice && (
-                                                <span className="text-sm text-mist/50 line-through">{ecole.oldPrice}</span>
-                                            )}
-                                            <span className={`font-bold ${ecole.oldPrice ? 'text-green-400' : 'text-white'}`}>
-                                                {ecole.price} <span className="text-xs font-normal text-mist">FCFA</span>
+                                            <span className="font-bold text-white">
+                                                {school.formattedPrice} <span className="text-xs font-normal text-mist">FCFA</span>
                                             </span>
                                         </div>
                                     </div>
@@ -159,7 +169,7 @@ export default function SelectionPopulaireVariant() {
                                         <ArrowRight className="w-4 h-4 text-signal group-hover:text-asphalt transition-colors" />
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))
                     )}
                 </div>

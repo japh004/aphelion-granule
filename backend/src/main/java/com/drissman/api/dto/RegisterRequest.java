@@ -22,4 +22,5 @@ public class RegisterRequest {
     private String lastName;
 
     private String role = "STUDENT";
+    private String schoolName;
 }

@@ -9,3 +9,5 @@ export { useAvailabilities } from './useAvailabilities';
 export { usePartnerStats } from './usePartnerStats';
 export { usePartnerBookings } from './usePartnerBookings';
 export { useStudentProgress } from './useStudentProgress';
+export { useProfile } from './useProfile';
+

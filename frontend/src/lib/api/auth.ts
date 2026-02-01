@@ -21,6 +21,7 @@ export interface RegisterPayload {
     firstName: string;
     lastName: string;
     role?: 'STUDENT' | 'SCHOOL_ADMIN';
+    schoolName?: string;
 }
 
 export interface LoginPayload {

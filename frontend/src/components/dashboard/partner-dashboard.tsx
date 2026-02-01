@@ -56,29 +56,6 @@ export function PartnerDashboard({ user }: PartnerDashboardProps) {
                 </div>
             </div>
 
-            {/* Profile Status Banner */}
-            <div className="bg-signal/10 border border-signal/20 rounded-[2rem] p-8 flex flex-col md:flex-row items-center gap-10 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-signal/5 blur-[100px] rounded-full group-hover:bg-signal/10 transition-colors duration-1000" />
-
-                <div className="relative h-32 w-32 shrink-0 hidden md:block">
-                    <Image
-                        src="/dashboard_welcome_dark.png"
-                        alt="Welcome"
-                        fill
-                        className="object-contain drop-shadow-2xl"
-                    />
-                </div>
-
-                <div className="flex-1 text-center md:text-left relative z-10">
-                    <h3 className="text-xl font-black text-snow mb-2">Votre profil est incomplet à 20%</h3>
-                    <p className="text-sm text-mist mb-6 font-medium leading-relaxed max-w-xl">
-                        Ajoutez votre logo et vos horaires pour obtenir le badge <span className="text-signal font-bold">&quot;Vérifié&quot;</span> et gagner la confiance de <span className="text-snow">3x plus d&apos;élèves</span> ce mois-ci.
-                    </p>
-                    <button className="px-6 py-3 rounded-xl bg-signal hover:bg-signal-dark text-asphalt text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl">
-                        Compléter mon profil
-                    </button>
-                </div>
-            </div>
 
             {/* KPIs Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -99,9 +76,9 @@ export function PartnerDashboard({ user }: PartnerDashboardProps) {
                 <KpiCard
                     title="Taux de réussite"
                     value={stats?.successRate || "0%"}
-                    sub="-2% vs mois dernier"
+                    sub="Mise à jour hebdomadaire"
                     icon={TrendingUp}
-                    uprising={false}
+                    uprising={true}
                 />
                 <KpiCard
                     title="Leçons à venir"
@@ -142,21 +119,29 @@ export function PartnerDashboard({ user }: PartnerDashboardProps) {
                         <Link href="/dashboard/planning" className="text-[10px] font-black text-signal uppercase tracking-widest hover:underline text-right">Calendrier complet</Link>
                     </div>
                     <div className="space-y-6">
-                        {[
-                            { time: "08:00 - 10:00", activity: "Cours de Code (Salle A)", instr: "Jean-Pierre" },
-                            { time: "10:30 - 12:30", activity: "Conduite (Yaris 1234)", instr: "Junior" },
-                            { time: "14:00 - 16:00", activity: "Conduite (Yaris 1234)", instr: "Junior" },
-                        ].map((item, i) => (
-                            <div key={i} className="flex gap-6 items-start p-4 rounded-3xl bg-white/5 border border-white/5">
-                                <div className="bg-signal/10 text-signal px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap border border-signal/20 shadow-lg shadow-signal/5">
-                                    {item.time}
+                        {bookings && bookings.filter(b => {
+                            const today = new Date().toISOString().split('T')[0];
+                            return b.date === today && b.status === 'CONFIRMED';
+                        }).length > 0 ? (
+                            bookings.filter(b => {
+                                const today = new Date().toISOString().split('T')[0];
+                                return b.date === today && b.status === 'CONFIRMED';
+                            }).slice(0, 3).map((item, i) => (
+                                <div key={item.id} className="flex gap-6 items-start p-4 rounded-3xl bg-white/5 border border-white/5">
+                                    <div className="bg-signal/10 text-signal px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap border border-signal/20 shadow-lg shadow-signal/5">
+                                        {item.time || "À confirmer"}
+                                    </div>
+                                    <div>
+                                        <div className="font-black text-snow">{item.offer.name}</div>
+                                        <div className="text-[10px] text-mist font-bold uppercase tracking-widest mt-1">Status: {item.status}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div className="font-black text-snow">{item.activity}</div>
-                                    <div className="text-[10px] text-mist font-bold uppercase tracking-widest mt-1">Moniteur: {item.instr}</div>
-                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-10 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                                <p className="text-xs text-mist font-bold uppercase tracking-widest">Aucun cours aujourd'hui</p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
             </div>

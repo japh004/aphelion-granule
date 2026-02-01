@@ -120,24 +120,6 @@ export function StudentDashboard() {
                 )}
             </div>
 
-            {/* Quick Tips */}
-            <div className="grid gap-6 md:grid-cols-2">
-                <div className="bg-gradient-to-br from-signal/20 to-asphalt rounded-2xl p-6 border border-signal/30">
-                    <h3 className="font-bold text-snow flex items-center gap-2 mb-3">
-                        <Star className="h-5 w-5 text-signal fill-signal" /> Conseil du jour
-                    </h3>
-                    <p className="text-mist text-shm">
-                        Pensez à réviser vos panneaux de signalisation au moins 15 minutes chaque jour pour être prêt pour l&apos;examen théorique.
-                    </p>
-                </div>
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-                    <h3 className="font-bold text-snow mb-3">Documents utiles</h3>
-                    <div className="space-y-2">
-                        <p className="text-sm text-mist hover:text-signal cursor-pointer">📄 Guide du candidat au permis B</p>
-                        <p className="text-sm text-mist hover:text-signal cursor-pointer">📄 Liste des pièces à fournir</p>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }

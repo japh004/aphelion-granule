@@ -17,3 +17,17 @@ databaseChangeLog:
       file: db/changelog/changes/008-seed-demo-data.yaml
   - include:
       file: db/changelog/changes/009-add-school-id-to-users.yaml
+  - include:
+      file: db/changelog/changes/010-fix-partner-schools.yaml
+  - include:
+      file: db/changelog/changes/011-seed-linda-local.yaml
+  - include:
+      file: db/changelog/changes/012-cleanup-demo-data.yaml
+  - include:
+      file: db/changelog/changes/013-restore-conduite-pro.yaml
+  - include:
+      file: db/changelog/changes/014-force-cleanup-schools.yaml
+  - include:
+      file: db/changelog/changes/015-update-school-images.yaml
+  - include:
+      file: db/changelog/changes/016-update-school-images-local.yaml

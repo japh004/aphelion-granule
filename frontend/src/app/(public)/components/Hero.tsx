@@ -102,7 +102,6 @@ export default function Hero() {
                         muted
                         playsInline
                         preload="auto"
-                        poster="/hero_student_dark.png"
                         className="absolute inset-0 w-full h-full object-cover z-0 opacity-80"
                         style={{
                             transform: 'translate(10%,-20%)',

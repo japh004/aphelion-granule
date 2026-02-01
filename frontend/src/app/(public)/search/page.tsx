@@ -52,15 +52,18 @@ export default function SearchPage() {
         return schools
             .map(school => ({
                 ...school,
-                price: (school as any).minPrice || 150000,
+                price: (school as any).offers?.[0]?.price || (school as any).minPrice || 0, // Utiliser le vrai prix ou 0
                 coordinates: getCoordinatesForCity(school.city),
-                reviewCount: Math.floor(Math.random() * 50) + 10,
-                features: ["Permis B", "Conduite accompagnée", "Code en ligne"],
-                isVerified: true,
+                reviewCount: 0, // Pas de fausses reviews
+                features: (school as any).offers?.map((o: any) => o.name).slice(0, 3) || [], // Utiliser les vrais noms d'offres
+                isVerified: false, // Pas vérifié par défaut
                 imageUrl: school.imageUrl || "/hero_student_dark.png",
             }))
             .filter(school => {
-                const matchesPrice = school.price <= filters.maxPrice;
+                // Filtrer: L'école doit avoir au moins une offre (prix > 0)
+                if ((school.price === 0 || school.price === undefined) && !school.offers?.length) return false;
+
+                const matchesPrice = filters.maxPrice ? school.price <= filters.maxPrice : true;
                 const matchesRating = filters.ratings.length === 0 ||
                     filters.ratings.some(r => school.rating >= r);
                 return matchesPrice && matchesRating;

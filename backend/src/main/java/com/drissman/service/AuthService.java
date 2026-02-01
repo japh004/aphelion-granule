@@ -3,7 +3,9 @@ package com.drissman.service;
 import com.drissman.api.dto.AuthResponse;
 import com.drissman.api.dto.LoginRequest;
 import com.drissman.api.dto.RegisterRequest;
+import com.drissman.domain.entity.School;
 import com.drissman.domain.entity.User;
+import com.drissman.domain.repository.SchoolRepository;
 import com.drissman.domain.repository.UserRepository;
 import com.drissman.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import reactor.core.publisher.Mono;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final SchoolRepository schoolRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -26,16 +29,41 @@ public class AuthService {
                         return Mono.error(new RuntimeException("Email already exists"));
                     }
 
-                    User user = User.builder()
-                            .email(request.getEmail())
-                            .password(passwordEncoder.encode(request.getPassword()))
-                            .firstName(request.getFirstName())
-                            .lastName(request.getLastName())
-                            .role(User.Role.valueOf(request.getRole().toUpperCase()))
-                            .build();
+                    User.Role userRole = User.Role.valueOf(request.getRole().toUpperCase());
 
-                    return userRepository.save(user)
-                            .map(this::createAuthResponse);
+                    if (userRole == User.Role.SCHOOL_ADMIN) {
+                        School school = School.builder()
+                                .name(request.getSchoolName() != null ? request.getSchoolName()
+                                        : "Ma Nouvelle Auto-École")
+                                .address("Adresse à compléter")
+                                .city("Yaoundé") // Default city
+                                .build();
+
+                        return schoolRepository.save(school)
+                                .flatMap(savedSchool -> {
+                                    User user = User.builder()
+                                            .email(request.getEmail())
+                                            .password(passwordEncoder.encode(request.getPassword()))
+                                            .firstName(request.getFirstName())
+                                            .lastName(request.getLastName())
+                                            .role(userRole)
+                                            .schoolId(savedSchool.getId())
+                                            .build();
+                                    return userRepository.save(user);
+                                })
+                                .map(this::createAuthResponse);
+                    } else {
+                        User user = User.builder()
+                                .email(request.getEmail())
+                                .password(passwordEncoder.encode(request.getPassword()))
+                                .firstName(request.getFirstName())
+                                .lastName(request.getLastName())
+                                .role(userRole)
+                                .build();
+
+                        return userRepository.save(user)
+                                .map(this::createAuthResponse);
+                    }
                 });
     }
 

@@ -79,10 +79,11 @@ public class PartnerService {
                                                                         .revenue(String.format("%,d FCFA", totalRevenue)
                                                                                         .replace(",", " "))
                                                                         .enrollments(enrollments)
-                                                                        .successRate("85%") // Placeholder for now
+                                                                        .successRate("N/A") // Pas d'examens pour le
+                                                                                            // moment
                                                                         .upcomingLessons((int) upcoming)
-                                                                        .revenueGrowth(12.5) // Placeholder
-                                                                        .enrollmentGrowth(3) // Placeholder
+                                                                        .revenueGrowth(0.0) // Pas d'historique
+                                                                        .enrollmentGrowth(0) // Pas d'historique
                                                                         .build());
                                 });
         }

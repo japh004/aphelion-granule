@@ -7,7 +7,7 @@ interface AuthContextType {
     user: AuthUser | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<void>;
-    register: (email: string, password: string, firstName: string, lastName: string, role?: 'STUDENT' | 'SCHOOL_ADMIN') => Promise<void>;
+    register: (email: string, password: string, firstName: string, lastName: string, role?: 'STUDENT' | 'SCHOOL_ADMIN', schoolName?: string) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
 }
@@ -40,14 +40,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password: string,
         firstName: string,
         lastName: string,
-        role: 'STUDENT' | 'SCHOOL_ADMIN' = 'STUDENT'
+        role: 'STUDENT' | 'SCHOOL_ADMIN' = 'STUDENT',
+        schoolName?: string
     ) => {
         const response = await authService.register({
             email,
             password,
             firstName,
             lastName,
-            role
+            role,
+            schoolName
         });
         setUser(response.user);
         if (typeof window !== 'undefined') {
@@ -58,6 +60,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const logout = useCallback(() => {
         authService.logout();
         setUser(null);
+        if (typeof window !== 'undefined') {
+            window.location.href = '/';
+        }
     }, []);
 
     return (

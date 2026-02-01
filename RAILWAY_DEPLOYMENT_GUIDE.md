@@ -32,13 +32,30 @@ Allez dans l'onglet **Variables** de votre service backend et ajoutez les variab
 | **`SPRING_R2DBC_URL`** | `r2dbc:postgresql://${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}` |
 | **`SPRING_LIQUIBASE_URL`** | `jdbc:postgresql://${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}` |
 | **`SPRING_DATASOURCE_URL`** | `jdbc:postgresql://${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}` |
-| **`SPRING_LIQUIBASE_USER`** | `${{Postgres.PGUSER}}` |
-| **`SPRING_LIQUIBASE_PASSWORD`** | `${{Postgres.PGPASSWORD}}` |
-| **`SPRING_DATASOURCE_USERNAME`** | `${{Postgres.PGUSER}}` |
-| **`SPRING_DATASOURCE_PASSWORD`** | `${{Postgres.PGPASSWORD}}` |
-| `SPRING_REDIS_HOST` | `${{Redis.REDISHOST}}` |
-| `SPRING_REDIS_PORT` | `${{Redis.REDISPORT}}` |
-| `SPRING_REDIS_PASSWORD` | `${{Redis.REDISPASSWORD}}` |
+| `SPRING_R2DBC_USERNAME` | `${{Postgres.PGUSER}}` |
+| `SPRING_R2DBC_PASSWORD` | `${{Postgres.PGPASSWORD}}` |
+| `SPRING_DATASOURCE_USERNAME` | `${{Postgres.PGUSER}}` |
+| `SPRING_DATASOURCE_PASSWORD` | `${{Postgres.PGPASSWORD}}` |
+
+---
+
+## 🛠️ Dépannage (Troubleshooting)
+
+### Les logs défilent à l'infini et l'application crash ?
+
+Si vous voyez des milliers de lignes de type `DEBUG ... Loaded liquibase.sqlgenerator`, c'est que le mode "Debug" est activé (soit globalement, soit pour Liquibase). Cela consomme énormément de mémoire et peut faire crasher votre instance Railway.
+
+**Action recommandée :**
+Ajoutez ces variables pour calmer les logs et optimiser la mémoire :
+
+| Key | Value | But |
+| :--- | :--- | :--- |
+| **`LOGGING_LEVEL_LIQUIBASE`** | `INFO` | Arrête le spam de Liquibase |
+| **`LOGGING_LEVEL_ROOT`** | `INFO` | Force le mode normal pour tout l'appli |
+| **`JAVA_TOOL_OPTIONS`** | `-Xmx384m` | Empêche Java de dépasser la mémoire autorisée |
+
+### Pourquoi ça crashait ?
+Le scan initial de Liquibase est très gourmand en RAM. En mode `DEBUG`, chaque fichier scanné génère une ligne de log, ce qui sature le CPU et la mémoire. En passant en `INFO` et en limitant la mémoire du tas (`-Xmx`), l'application devient stable.
 | `JWT_SECRET` | `votre_secret_tres_long_et_securise` |
 
 > [!IMPORTANT]

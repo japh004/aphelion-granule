@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAvailabilities } from "@/hooks";
+import { useAuth } from "@/hooks/useAuth";
 import { DAYS_OF_WEEK } from "@/lib/api";
 import {
     Clock,
@@ -19,9 +20,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/modal";
 
-// For demo purposes, using a fixed school ID
-const DEMO_SCHOOL_ID = "1";
-
 interface AvailabilityFormData {
     dayOfWeek: string;
     startTime: string;
@@ -37,6 +35,9 @@ const initialFormData: AvailabilityFormData = {
 };
 
 export default function AvailabilitiesPage() {
+    const { user } = useAuth();
+    const schoolId = user?.schoolId;
+
     const {
         availabilities,
         groupedByDay,
@@ -46,7 +47,7 @@ export default function AvailabilitiesPage() {
         createAvailability,
         updateAvailability,
         deleteAvailability
-    } = useAvailabilities(DEMO_SCHOOL_ID);
+    } = useAvailabilities(schoolId || "");
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -92,7 +93,7 @@ export default function AvailabilitiesPage() {
 
         try {
             const payload = {
-                schoolId: DEMO_SCHOOL_ID,
+                schoolId: schoolId || "",
                 dayOfWeek: parseInt(formData.dayOfWeek),
                 startTime: formData.startTime,
                 endTime: formData.endTime,

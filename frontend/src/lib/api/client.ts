@@ -49,9 +49,9 @@ class ApiClient {
         try {
             let cleanBaseUrl = this.baseUrl.trim().replace(/\/$/, '');
 
-            // Si l'URL ne commence pas par http, on rajoute https://
+            // Si l'URL ne commence pas par http, on rajoute http:// par défaut
             if (cleanBaseUrl && !cleanBaseUrl.startsWith('http')) {
-                cleanBaseUrl = `https://${cleanBaseUrl}`;
+                cleanBaseUrl = `http://${cleanBaseUrl}`;
             }
 
             const cleanEndpoint = endpoint.replace(/^\//, '');
@@ -66,9 +66,9 @@ class ApiClient {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                return {
-                    error: errorData.message || `Error: ${response.status}`
-                };
+                const errorMessage = errorData.error || errorData.message || `Error: ${response.status}`;
+                console.error(`[ApiClient] Error on ${url}:`, errorMessage);
+                return { error: errorMessage };
             }
 
             // Handle 204 No Content
@@ -85,8 +85,8 @@ class ApiClient {
         }
     }
 
-    async get<T>(endpoint: string): Promise<ApiResponse<T>> {
-        return this.request<T>(endpoint, { method: 'GET' });
+    async get<T>(endpoint: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+        return this.request<T>(endpoint, { method: 'GET', headers });
     }
 
     async post<T>(endpoint: string, body?: unknown): Promise<ApiResponse<T>> {

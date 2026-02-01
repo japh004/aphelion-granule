@@ -19,7 +19,9 @@ export interface Invoice {
 // Invoices Service
 export const invoicesService = {
     async getMyInvoices(userId: string): Promise<Invoice[]> {
-        const { data, error } = await api.get<Invoice[]>('/invoices');
+        const { data, error } = await api.get<Invoice[]>('/invoices', {
+            'X-User-Id': userId
+        });
         if (error) throw new Error(error);
         return data || [];
     },
