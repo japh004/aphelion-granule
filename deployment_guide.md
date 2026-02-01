@@ -17,7 +17,7 @@ Le fichier `docker-compose.deployment.yml` orchestre 4 services :
 
 ## Lancement Rapide
 
-1.  Ouvrez un terminal à la racine du projet `aphelion-granule`.
+1.  Ouvrez un terminal à la racine du projet `drissman`.
 2.  Lancez le déploiement :
     ```bash
     docker-compose -f docker-compose.deployment.yml up -d --build
