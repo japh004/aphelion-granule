@@ -42,6 +42,12 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/offers/**").permitAll()
                         .pathMatchers("/api/health").permitAll()
+                        // Demo: allow partner and bookings endpoints without auth
+                        .pathMatchers("/api/partner/**").permitAll()
+                        .pathMatchers("/api/bookings/**").permitAll()
+                        .pathMatchers("/api/invoices/**").permitAll()
+                        .pathMatchers("/api/availabilities/**").permitAll()
+                        .pathMatchers("/api/users/**").permitAll()
                         // Protected endpoints
                         .anyExchange().authenticated())
                 .build();
