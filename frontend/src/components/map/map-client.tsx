@@ -63,7 +63,7 @@ export default function MapClient({ schools, center = [3.8480, 11.5021], zoom = 
                             <div className="p-1">
                                 <h3 className="font-bold text-sm mb-1">{school.name}</h3>
                                 <p className="text-xs text-gray-600 mb-2">{school.price.toLocaleString()} FCFA</p>
-                                <a href="#" className="bg-primary text-white text-xs px-2 py-1 rounded block text-center">
+                                <a href={`/school/${school.id}`} className="bg-primary text-white text-xs px-2 py-1 rounded block text-center">
                                     Voir
                                 </a>
                             </div>
