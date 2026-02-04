@@ -198,7 +198,6 @@ export default function Hero() {
                         preload="auto"
                         className="absolute inset-0 w-full h-full object-cover z-0"
                         style={{
-                            transform: 'translate(10%, -5%) scale(1.05)',
                             filter: 'brightness(1) contrast(1.05)',
                             maskImage: 'radial-gradient(ellipse 80% 90% at 50% 50%, black 40%, transparent 100%)',
                             WebkitMaskImage: 'radial-gradient(ellipse 80% 90% at 50% 50%, black 40%, transparent 100%)'
