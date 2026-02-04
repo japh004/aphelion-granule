@@ -1,4 +1,5 @@
 "use client";
+// Build fix: Force fresh deployment
 
 import { Calendar, Clock, BookOpen, Star, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
