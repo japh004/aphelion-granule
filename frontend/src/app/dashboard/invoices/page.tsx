@@ -11,8 +11,7 @@ import {
     Clock,
     AlertCircle,
     CreditCard,
-    RefreshCw,
-    FileSpreadsheet
+    RefreshCw
 } from "lucide-react";
 import { toast } from "sonner";
 import { Invoice } from "@/lib/api";
@@ -73,42 +72,97 @@ export default function InvoicesPage() {
         }
     };
 
-    const handleExportCSV = () => {
-        if (invoices.length === 0) {
-            toast.error("Aucune facture à exporter");
-            return;
+    const handleDownloadInvoice = (invoice: Invoice) => {
+        const invoiceHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture #${invoice.id.slice(0, 8)}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #ffc107; padding-bottom: 20px; }
+        .header h1 { color: #ffc107; margin: 0; }
+        .header p { color: #666; }
+        .invoice-info { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .invoice-info div { width: 45%; }
+        .invoice-info h3 { margin-bottom: 10px; color: #333; }
+        .invoice-info p { margin: 5px 0; color: #666; }
+        table { width: 100%; border-collapse: collapse; margin: 30px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f5f5f5; font-weight: bold; }
+        .total { font-size: 1.2em; font-weight: bold; text-align: right; margin-top: 20px; }
+        .status { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; }
+        .status-paid { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .footer { margin-top: 50px; text-align: center; color: #999; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DRISSMAN</h1>
+        <p>Facture de réservation</p>
+    </div>
+    
+    <div class="invoice-info">
+        <div>
+            <h3>Facture</h3>
+            <p><strong>N°:</strong> ${invoice.id.slice(0, 8).toUpperCase()}</p>
+            <p><strong>Date:</strong> ${new Date(invoice.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            <p><strong>Statut:</strong> <span class="status ${invoice.status === 'PAID' ? 'status-paid' : 'status-pending'}">${STATUS_CONFIG[invoice.status]?.label || invoice.status}</span></p>
+        </div>
+        <div>
+            <h3>Auto-école</h3>
+            <p><strong>${invoice.booking?.schoolName || 'N/A'}</strong></p>
+            <p>Formation: ${invoice.booking?.offerName || 'N/A'}</p>
+        </div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Montant</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${invoice.booking?.offerName || 'Formation'}</td>
+                <td>${invoice.amount.toLocaleString()} FCFA</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="total">
+        Total: ${invoice.amount.toLocaleString()} FCFA
+    </div>
+    
+    ${invoice.paidAt ? `
+    <p style="margin-top: 30px; color: #28a745;">
+        <strong>Payée le:</strong> ${new Date(invoice.paidAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+        ${invoice.paymentMethod ? ` via ${PAYMENT_METHOD_LABELS[invoice.paymentMethod] || invoice.paymentMethod}` : ''}
+    </p>
+    ` : ''}
+    
+    <div class="footer">
+        <p>Merci pour votre confiance !</p>
+        <p>DRISSMAN - Votre plateforme de réservation d'auto-école</p>
+    </div>
+</body>
+</html>
+        `;
+
+        const blob = new Blob([invoiceHtml], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        const printWindow = window.open(url, '_blank');
+        if (printWindow) {
+            printWindow.onload = () => {
+                printWindow.print();
+            };
         }
 
-        // Create CSV content
-        const headers = ["ID", "Client", "Offre", "Montant", "Statut", "Date création", "Date paiement", "Méthode"];
-        const rows = invoices.map(inv => [
-            inv.id.slice(0, 8),
-            inv.booking?.schoolName || "N/A",
-            inv.booking?.offerName || "N/A",
-            inv.amount.toString(),
-            STATUS_CONFIG[inv.status]?.label || inv.status,
-            new Date(inv.createdAt).toLocaleDateString('fr-FR'),
-            inv.paidAt ? new Date(inv.paidAt).toLocaleDateString('fr-FR') : "",
-            inv.paymentMethod ? PAYMENT_METHOD_LABELS[inv.paymentMethod] || inv.paymentMethod : ""
-        ]);
-
-        const csvContent = [
-            headers.join(";"),
-            ...rows.map(row => row.map(cell => `"${cell}"`).join(";"))
-        ].join("\n");
-
-        // Create and download blob
-        const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `factures_${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        toast.success("Export CSV téléchargé !");
+        toast.success("Facture ouverte pour impression/téléchargement");
     };
 
     const formatDate = (dateString: string) => {
@@ -166,26 +220,15 @@ export default function InvoicesPage() {
     return (
         <div className="p-6 lg:p-8 space-y-8">
             {/* Header */}
-            <div className="flex justify-between items-start">
-                <div>
-                    <h1 className="text-2xl font-bold text-snow mb-2">
-                        {isSchoolAdmin ? "Factures des élèves" : "Mes Factures"}
-                    </h1>
-                    <p className="text-mist">
-                        {isSchoolAdmin
-                            ? "Consultez les factures de vos élèves inscrits."
-                            : "Gérez vos paiements et consultez l'historique de vos transactions."}
-                    </p>
-                </div>
-                {isSchoolAdmin && (
-                    <button
-                        onClick={handleExportCSV}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-signal hover:bg-signal-dark text-asphalt font-bold transition-all"
-                    >
-                        <FileSpreadsheet className="h-4 w-4" />
-                        Exporter CSV
-                    </button>
-                )}
+            <div>
+                <h1 className="text-2xl font-bold text-snow mb-2">
+                    {isSchoolAdmin ? "Factures des élèves" : "Mes Factures"}
+                </h1>
+                <p className="text-mist">
+                    {isSchoolAdmin
+                        ? "Consultez les factures de vos élèves inscrits."
+                        : "Gérez vos paiements et consultez l'historique de vos transactions."}
+                </p>
             </div>
 
             {/* Summary Cards */}
@@ -231,7 +274,16 @@ export default function InvoicesPage() {
                             key={invoice.id}
                             className="bg-white/5 border border-white/10 rounded-xl p-5 hover:border-white/20 transition-colors"
                         >
-                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                            <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+                                {/* Download icon at the LEFT */}
+                                <button
+                                    onClick={() => handleDownloadInvoice(invoice)}
+                                    className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-signal hover:text-signal-dark transition-all border border-white/5 shrink-0"
+                                    title="Télécharger la facture"
+                                >
+                                    <Download className="h-5 w-5" />
+                                </button>
+
                                 {/* Invoice Info */}
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
@@ -254,35 +306,26 @@ export default function InvoicesPage() {
                                     )}
                                 </div>
 
-                                {/* Amount & Actions */}
+                                {/* Amount & Pay Actions */}
                                 <div className="flex items-center gap-4">
                                     <div className="text-right">
                                         <p className="text-2xl font-bold text-signal">{invoice.amount.toLocaleString()} FCFA</p>
                                     </div>
 
-                                    <div className="flex gap-2">
-                                        {/* Pay button only for students with pending invoices */}
-                                        {!isSchoolAdmin && invoice.status === 'PENDING' && (
-                                            <button
-                                                onClick={() => handlePayInvoice(invoice.id, 'MTN_MOMO')}
-                                                disabled={isPaying}
-                                                className="flex items-center gap-2 px-4 py-2 bg-signal hover:bg-signal-dark text-asphalt font-bold rounded-lg transition-all disabled:opacity-50"
-                                            >
-                                                {isPaying ? (
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                ) : (
-                                                    <CreditCard className="h-4 w-4" />
-                                                )}
-                                                Payer
-                                            </button>
-                                        )}
+                                    {!isSchoolAdmin && invoice.status === 'PENDING' && (
                                         <button
-                                            className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-mist hover:text-snow transition-colors"
-                                            title="Télécharger la facture"
+                                            onClick={() => handlePayInvoice(invoice.id, 'MTN_MOMO')}
+                                            disabled={isPaying}
+                                            className="flex items-center gap-2 px-4 py-2 bg-signal hover:bg-signal-dark text-asphalt font-bold rounded-lg transition-all disabled:opacity-50"
                                         >
-                                            <Download className="h-5 w-5" />
+                                            {isPaying ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <CreditCard className="h-4 w-4" />
+                                            )}
+                                            Payer
                                         </button>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

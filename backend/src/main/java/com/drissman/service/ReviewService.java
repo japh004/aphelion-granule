@@ -8,7 +8,7 @@ import com.drissman.domain.repository.BookingRepository;
 import com.drissman.domain.repository.ReviewRepository;
 import com.drissman.domain.repository.SchoolRepository;
 import com.drissman.domain.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewService {
 
         private final ReviewRepository reviewRepository;
@@ -26,24 +27,38 @@ public class ReviewService {
         private final BookingRepository bookingRepository;
 
         public Mono<ReviewDto> create(UUID userId, CreateReviewRequest request) {
+                log.info("Creating review for user {} and school {}. Rating: {}", userId, request.getSchoolId(),
+                                request.getRating());
+
                 // 1. Verify user has a confirmed or completed booking with this school
                 return bookingRepository.findByUserId(userId)
-                                .filter(booking -> booking.getSchoolId().equals(request.getSchoolId()) &&
-                                                (booking.getStatus() == Booking.BookingStatus.CONFIRMED ||
-                                                                booking.getStatus() == Booking.BookingStatus.COMPLETED))
-                                .hasElements()
-                                .flatMap(hasBooking -> {
-                                        if (!hasBooking) {
+                                .collectList()
+                                .flatMap(bookings -> {
+                                        log.info("Found {} bookings for user {}", bookings.size(), userId);
+
+                                        boolean hasValidBooking = bookings.stream().anyMatch(booking -> booking
+                                                        .getSchoolId().equals(request.getSchoolId()) &&
+                                                        (booking.getStatus() == Booking.BookingStatus.CONFIRMED ||
+                                                                        booking.getStatus() == Booking.BookingStatus.COMPLETED));
+
+                                        if (!hasValidBooking) {
+                                                log.warn("Review rejected: No confirmed/completed booking found for user {} and school {}",
+                                                                userId, request.getSchoolId());
                                                 return Mono.error(new RuntimeException(
                                                                 "Vous devez avoir une réservation confirmée pour laisser un avis."));
                                         }
 
                                         // 2. Check if user already reviewed this school
                                         return reviewRepository.findByUserIdAndSchoolId(userId, request.getSchoolId())
-                                                        .flatMap(existing -> Mono
-                                                                        .<ReviewDto>error(new RuntimeException(
-                                                                                        "Vous avez déjà laissé un avis pour cette auto-école.")))
+                                                        .flatMap(existing -> {
+                                                                log.warn("Review rejected: User {} already reviewed school {}",
+                                                                                userId, request.getSchoolId());
+                                                                return Mono.<ReviewDto>error(new RuntimeException(
+                                                                                "Vous avez déjà laissé un avis pour cette auto-école."));
+                                                        })
                                                         .switchIfEmpty(Mono.defer(() -> {
+                                                                log.info("Saving new review for user {} and school {}",
+                                                                                userId, request.getSchoolId());
                                                                 Review review = Review.builder()
                                                                                 .userId(userId)
                                                                                 .schoolId(request.getSchoolId())
@@ -53,11 +68,14 @@ public class ReviewService {
                                                                                 .build();
 
                                                                 return reviewRepository.save(review)
-                                                                                .flatMap(saved -> enrichWithUserName(
-                                                                                                saved)
-                                                                                                .flatMap(dto -> updateSchoolRating(
-                                                                                                                request.getSchoolId())
-                                                                                                                .thenReturn(dto)));
+                                                                                .flatMap(saved -> {
+                                                                                        log.info("Review saved successfully: {}",
+                                                                                                        saved.getId());
+                                                                                        return enrichWithUserName(saved)
+                                                                                                        .flatMap(dto -> updateSchoolRating(
+                                                                                                                        request.getSchoolId())
+                                                                                                                        .thenReturn(dto));
+                                                                                });
                                                         }));
                                 });
         }
