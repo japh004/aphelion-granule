@@ -189,13 +189,22 @@ export default function Hero() {
             {isLight && (
                 <>
                     {/* Hero Background Image - Light */}
-                    <div
-                        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+                    {/* Hero Background Video - Light */}
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="auto"
+                        className="absolute inset-0 w-full h-full object-cover z-0"
                         style={{
-                            backgroundImage: 'url(/hero-light.png)',
-                            backgroundPosition: '80% -60%',
-                        }}
-                    />
+                            transform: 'translate(10%, -5%) scale(1.05)',
+                            filter: 'brightness(1) contrast(1.05)',
+                            maskImage: 'radial-gradient(ellipse 80% 90% at 50% 50%, black 40%, transparent 100%)',
+                            WebkitMaskImage: 'radial-gradient(ellipse 80% 90% at 50% 50%, black 40%, transparent 100%)'
+                        }}>
+                        <source src="/assets/hero-light-video.mp4" type="video/mp4" />
+                    </video>
 
                     {/* Subtle overlay to ensure text readability on left */}
                     <div className="absolute inset-0 z-[5] pointer-events-none"
