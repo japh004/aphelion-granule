@@ -26,9 +26,6 @@ export function BookingWidget({ school, onBookClick }: BookingWidgetProps) {
                 >
                     Réserver maintenant
                 </button>
-                <button className="w-full bg-white/5 border border-white/10 hover:border-signal/30 text-snow font-bold py-3 rounded-xl transition-all">
-                    Poser une question
-                </button>
             </div>
 
             <div className="space-y-3">

@@ -2,9 +2,8 @@ package com.drissman.service;
 
 import com.drissman.api.dto.CreateReviewRequest;
 import com.drissman.api.dto.ReviewDto;
-import com.drissman.domain.entity.Review;
-import com.drissman.domain.entity.School;
 import com.drissman.domain.entity.Booking;
+import com.drissman.domain.entity.Review;
 import com.drissman.domain.repository.BookingRepository;
 import com.drissman.domain.repository.ReviewRepository;
 import com.drissman.domain.repository.SchoolRepository;
@@ -27,27 +26,23 @@ public class ReviewService {
         private final BookingRepository bookingRepository;
 
         public Mono<ReviewDto> create(UUID userId, CreateReviewRequest request) {
-                // 1. Verify user has a confirmed or completed booking
-                return bookingRepository
-                                .existsByUserIdAndSchoolIdAndStatus(userId, request.getSchoolId(),
-                                                Booking.BookingStatus.CONFIRMED)
-                                .flatMap(confirmed -> {
-                                        if (confirmed)
-                                                return Mono.just(true);
-                                        return bookingRepository.existsByUserIdAndSchoolIdAndStatus(userId,
-                                                        request.getSchoolId(), Booking.BookingStatus.COMPLETED);
-                                })
+                // 1. Verify user has a confirmed or completed booking with this school
+                return bookingRepository.findByUserId(userId)
+                                .filter(booking -> booking.getSchoolId().equals(request.getSchoolId()) &&
+                                                (booking.getStatus() == Booking.BookingStatus.CONFIRMED ||
+                                                                booking.getStatus() == Booking.BookingStatus.COMPLETED))
+                                .hasElements()
                                 .flatMap(hasBooking -> {
                                         if (!hasBooking) {
                                                 return Mono.error(new RuntimeException(
-                                                                "You must have a confirmed booking with this school to leave a review."));
+                                                                "Vous devez avoir une réservation confirmée pour laisser un avis."));
                                         }
 
                                         // 2. Check if user already reviewed this school
                                         return reviewRepository.findByUserIdAndSchoolId(userId, request.getSchoolId())
                                                         .flatMap(existing -> Mono
                                                                         .<ReviewDto>error(new RuntimeException(
-                                                                                        "You have already reviewed this school")))
+                                                                                        "Vous avez déjà laissé un avis pour cette auto-école.")))
                                                         .switchIfEmpty(Mono.defer(() -> {
                                                                 Review review = Review.builder()
                                                                                 .userId(userId)

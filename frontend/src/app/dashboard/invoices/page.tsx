@@ -11,7 +11,8 @@ import {
     Clock,
     AlertCircle,
     CreditCard,
-    RefreshCw
+    RefreshCw,
+    FileSpreadsheet
 } from "lucide-react";
 import { toast } from "sonner";
 import { Invoice } from "@/lib/api";
@@ -39,7 +40,7 @@ const STATUS_CONFIG = {
     }
 };
 
-const PAYMENT_METHOD_LABELS = {
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
     MTN_MOMO: "MTN Mobile Money",
     ORANGE_MONEY: "Orange Money",
     CARD: "Carte bancaire",
@@ -48,7 +49,14 @@ const PAYMENT_METHOD_LABELS = {
 
 export default function InvoicesPage() {
     const { user } = useAuth();
-    const { invoices, loading, error, refetch, payInvoice, totalPending, totalPaid } = useInvoices(user?.id);
+    const isSchoolAdmin = user?.role === "SCHOOL_ADMIN";
+
+    // Use schoolId for school admins, userId for students
+    const { invoices, loading, error, refetch, payInvoice, totalPending, totalPaid } = useInvoices(
+        isSchoolAdmin && user?.schoolId
+            ? { schoolId: user.schoolId }
+            : { userId: user?.id }
+    );
     const [payingId, setPayingId] = useState<string | null>(null);
 
     const handlePayInvoice = async (invoiceId: string, method: Invoice['paymentMethod']) => {
@@ -63,6 +71,44 @@ export default function InvoicesPage() {
         } finally {
             setPayingId(null);
         }
+    };
+
+    const handleExportCSV = () => {
+        if (invoices.length === 0) {
+            toast.error("Aucune facture à exporter");
+            return;
+        }
+
+        // Create CSV content
+        const headers = ["ID", "Client", "Offre", "Montant", "Statut", "Date création", "Date paiement", "Méthode"];
+        const rows = invoices.map(inv => [
+            inv.id.slice(0, 8),
+            inv.booking?.schoolName || "N/A",
+            inv.booking?.offerName || "N/A",
+            inv.amount.toString(),
+            STATUS_CONFIG[inv.status]?.label || inv.status,
+            new Date(inv.createdAt).toLocaleDateString('fr-FR'),
+            inv.paidAt ? new Date(inv.paidAt).toLocaleDateString('fr-FR') : "",
+            inv.paymentMethod ? PAYMENT_METHOD_LABELS[inv.paymentMethod] || inv.paymentMethod : ""
+        ]);
+
+        const csvContent = [
+            headers.join(";"),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(";"))
+        ].join("\n");
+
+        // Create and download blob
+        const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `factures_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        toast.success("Export CSV téléchargé !");
     };
 
     const formatDate = (dateString: string) => {
@@ -107,9 +153,11 @@ export default function InvoicesPage() {
             <div className="h-full p-8">
                 <EmptyState
                     title="Aucune facture"
-                    description="Vos factures apparaîtront ici après votre première réservation."
-                    actionLabel="Rechercher une auto-école"
-                    actionHref="/search"
+                    description={isSchoolAdmin
+                        ? "Les factures des réservations confirmées apparaîtront ici."
+                        : "Vos factures apparaîtront ici après votre première réservation."}
+                    actionLabel={isSchoolAdmin ? undefined : "Rechercher une auto-école"}
+                    actionHref={isSchoolAdmin ? undefined : "/search"}
                 />
             </div>
         );
@@ -118,9 +166,26 @@ export default function InvoicesPage() {
     return (
         <div className="p-6 lg:p-8 space-y-8">
             {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-snow mb-2">Mes Factures</h1>
-                <p className="text-mist">Gérez vos paiements et consultez l&apos;historique de vos transactions.</p>
+            <div className="flex justify-between items-start">
+                <div>
+                    <h1 className="text-2xl font-bold text-snow mb-2">
+                        {isSchoolAdmin ? "Factures des élèves" : "Mes Factures"}
+                    </h1>
+                    <p className="text-mist">
+                        {isSchoolAdmin
+                            ? "Consultez les factures de vos élèves inscrits."
+                            : "Gérez vos paiements et consultez l'historique de vos transactions."}
+                    </p>
+                </div>
+                {isSchoolAdmin && (
+                    <button
+                        onClick={handleExportCSV}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-signal hover:bg-signal-dark text-asphalt font-bold transition-all"
+                    >
+                        <FileSpreadsheet className="h-4 w-4" />
+                        Exporter CSV
+                    </button>
+                )}
             </div>
 
             {/* Summary Cards */}
@@ -196,7 +261,8 @@ export default function InvoicesPage() {
                                     </div>
 
                                     <div className="flex gap-2">
-                                        {invoice.status === 'PENDING' && (
+                                        {/* Pay button only for students with pending invoices */}
+                                        {!isSchoolAdmin && invoice.status === 'PENDING' && (
                                             <button
                                                 onClick={() => handlePayInvoice(invoice.id, 'MTN_MOMO')}
                                                 disabled={isPaying}

@@ -26,6 +26,12 @@ export const invoicesService = {
         return data || [];
     },
 
+    async getBySchool(schoolId: string): Promise<Invoice[]> {
+        const { data, error } = await api.get<Invoice[]>(`/invoices/school/${schoolId}`);
+        if (error) throw new Error(error);
+        return data || [];
+    },
+
     async getById(id: string): Promise<Invoice> {
         const { data, error } = await api.get<Invoice>(`/invoices/${id}`);
         if (error) throw new Error(error);

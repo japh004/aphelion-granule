@@ -26,6 +26,14 @@ public class InvoiceController {
     }
 
     /**
+     * Get all invoices for a school
+     */
+    @GetMapping("/school/{schoolId}")
+    public Flux<InvoiceDto> getBySchoolId(@PathVariable UUID schoolId) {
+        return invoiceService.findBySchoolId(schoolId);
+    }
+
+    /**
      * Get invoice by ID
      */
     @GetMapping("/{id}")

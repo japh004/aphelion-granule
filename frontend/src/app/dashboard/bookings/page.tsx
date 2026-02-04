@@ -56,9 +56,6 @@ export default function BookingsPage() {
                             : "Suivez vos inscriptions aux auto-écoles."}
                     </p>
                 </div>
-                {isSchoolAdmin && (
-                    <button className="px-4 py-2 rounded-xl bg-signal hover:bg-signal-dark text-asphalt font-bold transition-all">Exporter CSV</button>
-                )}
             </div>
 
             {/* Loading State */}

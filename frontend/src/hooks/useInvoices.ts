@@ -3,13 +3,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { invoicesService, Invoice } from '@/lib/api';
 
-export function useInvoices(userId?: string) {
+interface UseInvoicesOptions {
+    userId?: string;
+    schoolId?: string;
+}
+
+export function useInvoices(options: UseInvoicesOptions = {}) {
+    const { userId, schoolId } = options;
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const fetchInvoices = useCallback(async () => {
-        if (!userId) {
+        if (!userId && !schoolId) {
             setInvoices([]);
             setLoading(false);
             return;
@@ -18,14 +24,25 @@ export function useInvoices(userId?: string) {
         try {
             setLoading(true);
             setError(null);
-            const data = await invoicesService.getMyInvoices(userId);
+            let data: Invoice[];
+
+            if (schoolId) {
+                // Fetch invoices for the school
+                data = await invoicesService.getBySchool(schoolId);
+            } else if (userId) {
+                // Fetch invoices for the user
+                data = await invoicesService.getMyInvoices(userId);
+            } else {
+                data = [];
+            }
+
             setInvoices(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erreur de chargement');
         } finally {
             setLoading(false);
         }
-    }, [userId]);
+    }, [userId, schoolId]);
 
     useEffect(() => {
         fetchInvoices();
