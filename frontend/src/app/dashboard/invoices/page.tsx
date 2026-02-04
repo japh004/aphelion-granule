@@ -162,7 +162,7 @@ export default function InvoicesPage() {
             };
         }
 
-        toast.success("Facture ouverte pour impression/téléchargement");
+        toast.success("Facture prête pour impression");
     };
 
     const formatDate = (dateString: string) => {
@@ -274,16 +274,7 @@ export default function InvoicesPage() {
                             key={invoice.id}
                             className="bg-white/5 border border-white/10 rounded-xl p-5 hover:border-white/20 transition-colors"
                         >
-                            <div className="flex flex-col lg:flex-row lg:items-center gap-6">
-                                {/* Download icon at the LEFT */}
-                                <button
-                                    onClick={() => handleDownloadInvoice(invoice)}
-                                    className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-signal hover:text-signal-dark transition-all border border-white/5 shrink-0"
-                                    title="Télécharger la facture"
-                                >
-                                    <Download className="h-5 w-5" />
-                                </button>
-
+                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                                 {/* Invoice Info */}
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
@@ -306,26 +297,37 @@ export default function InvoicesPage() {
                                     )}
                                 </div>
 
-                                {/* Amount & Pay Actions */}
+                                {/* Amount & Actions (Download on the RIGHT) */}
                                 <div className="flex items-center gap-4">
                                     <div className="text-right">
                                         <p className="text-2xl font-bold text-signal">{invoice.amount.toLocaleString()} FCFA</p>
                                     </div>
 
-                                    {!isSchoolAdmin && invoice.status === 'PENDING' && (
+                                    <div className="flex items-center gap-2">
+                                        {/* Download icon at the RIGHT */}
                                         <button
-                                            onClick={() => handlePayInvoice(invoice.id, 'MTN_MOMO')}
-                                            disabled={isPaying}
-                                            className="flex items-center gap-2 px-4 py-2 bg-signal hover:bg-signal-dark text-asphalt font-bold rounded-lg transition-all disabled:opacity-50"
+                                            onClick={() => handleDownloadInvoice(invoice)}
+                                            className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-signal hover:text-signal-dark transition-all border border-white/5 shrink-0"
+                                            title="Télécharger la facture"
                                         >
-                                            {isPaying ? (
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                            ) : (
-                                                <CreditCard className="h-4 w-4" />
-                                            )}
-                                            Payer
+                                            <Download className="h-5 w-5" />
                                         </button>
-                                    )}
+
+                                        {!isSchoolAdmin && invoice.status === 'PENDING' && (
+                                            <button
+                                                onClick={() => handlePayInvoice(invoice.id, 'MTN_MOMO')}
+                                                disabled={isPaying}
+                                                className="flex items-center gap-2 px-4 py-2 bg-signal hover:bg-signal-dark text-asphalt font-bold rounded-lg transition-all disabled:opacity-50"
+                                            >
+                                                {isPaying ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <CreditCard className="h-4 w-4" />
+                                                )}
+                                                Payer
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
