@@ -63,6 +63,15 @@ export function DashboardSidebar() {
                 </nav>
 
                 <div className="p-4 border-t border-white/5 space-y-2">
+                    {!isPartner && (
+                        <Link
+                            href="/"
+                            className="flex items-center w-full px-4 py-3 text-sm font-medium text-mist hover:text-snow hover:bg-white/5 rounded-lg transition-colors"
+                        >
+                            <LayoutDashboard className="mr-3 h-5 w-5 rotate-180" />
+                            Retour au site
+                        </Link>
+                    )}
                     <button
                         onClick={logout}
                         className="flex items-center w-full px-4 py-3 text-sm font-medium text-mist hover:text-snow hover:bg-white/5 rounded-lg transition-colors"
@@ -104,6 +113,16 @@ export function MobileSidebar() {
                     <NavLinks navigation={navigation} onClick={() => setOpen(false)} />
                 </nav>
                 <div className="absolute bottom-4 left-4 right-4 space-y-2">
+                    {!isPartner && (
+                        <Link
+                            href="/"
+                            onClick={() => setOpen(false)}
+                            className="flex items-center w-full px-4 py-3 text-sm font-medium text-mist hover:text-snow hover:bg-white/5 rounded-lg transition-colors"
+                        >
+                            <LayoutDashboard className="mr-3 h-5 w-5 rotate-180" />
+                            Retour au site
+                        </Link>
+                    )}
                     <button
                         onClick={() => {
                             logout();

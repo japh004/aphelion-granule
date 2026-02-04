@@ -22,6 +22,8 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/010-fix-partner-schools.yaml
   - include:
+      file: db/changelog/changes/011-convert-offer-image-url-to-text.yaml
+  - include:
       file: db/changelog/changes/011-seed-linda-local.yaml
   - include:
       file: db/changelog/changes/012-cleanup-demo-data.yaml
