@@ -16,6 +16,8 @@ const offerImages: Record<string, string> = {
 };
 
 function getOfferImage(offer: Offer): string {
+    if (offer.imageUrl) return offer.imageUrl;
+
     const permitType = offer.permitType?.toUpperCase();
     const name = offer.name.toLowerCase();
 

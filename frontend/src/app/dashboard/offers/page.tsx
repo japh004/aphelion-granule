@@ -27,6 +27,7 @@ interface OfferFormData {
     price: string;
     hours: string;
     permitType: string;
+    imageUrl: string;
 }
 
 const initialFormData: OfferFormData = {
@@ -34,7 +35,8 @@ const initialFormData: OfferFormData = {
     description: "",
     price: "",
     hours: "",
-    permitType: "B"
+    permitType: "B",
+    imageUrl: ""
 };
 
 const PERMIT_TYPES = [
@@ -65,14 +67,15 @@ export default function OffersPage() {
         setIsModalOpen(true);
     };
 
-    const handleOpenEdit = (offer: { id: string; name: string; description?: string; price: number; hours: number; permitType?: string }) => {
+    const handleOpenEdit = (offer: { id: string; name: string; description?: string; price: number; hours: number; permitType: string; imageUrl?: string }) => {
         setEditingId(offer.id);
         setFormData({
             name: offer.name,
             description: offer.description || "",
             price: offer.price.toString(),
             hours: offer.hours.toString(),
-            permitType: offer.permitType || "B"
+            permitType: offer.permitType || "B",
+            imageUrl: offer.imageUrl || ""
         });
         setIsModalOpen(true);
     };
@@ -99,7 +102,8 @@ export default function OffersPage() {
                     description: formData.description || undefined,
                     price: parseInt(formData.price),
                     hours: parseInt(formData.hours),
-                    permitType: formData.permitType
+                    permitType: formData.permitType,
+                    imageUrl: formData.imageUrl || undefined
                 });
                 toast.success("Offre mise à jour avec succès !");
             } else {
@@ -109,7 +113,8 @@ export default function OffersPage() {
                     description: formData.description || undefined,
                     price: parseInt(formData.price),
                     hours: parseInt(formData.hours),
-                    permitType: formData.permitType
+                    permitType: formData.permitType,
+                    imageUrl: formData.imageUrl || undefined
                 });
                 toast.success("Offre créée avec succès !");
             }
@@ -216,8 +221,12 @@ export default function OffersPage() {
                             className="bg-white/[0.03] backdrop-blur-md border border-white/5 rounded-[2rem] p-6 hover:border-signal/30 transition-all duration-500 group flex flex-col"
                         >
                             <div className="flex items-start justify-between mb-4">
-                                <div className="p-3 rounded-2xl bg-white/5 text-signal group-hover:scale-110 transition-transform duration-500">
-                                    <Tag className="h-5 w-5" />
+                                <div className="p-3 rounded-2xl bg-white/5 text-signal group-hover:scale-110 transition-transform duration-500 overflow-hidden relative w-12 h-12 flex items-center justify-center">
+                                    {offer.imageUrl ? (
+                                        <img src={offer.imageUrl} alt={offer.name} className="absolute inset-0 w-full h-full object-cover" />
+                                    ) : (
+                                        <Tag className="h-5 w-5" />
+                                    )}
                                 </div>
                                 <div className="flex gap-2">
                                     <button
@@ -315,6 +324,25 @@ export default function OffersPage() {
                             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-snow placeholder:text-mist/30 focus:outline-none focus:ring-2 focus:ring-signal/20 focus:border-signal/50 transition-all resize-none font-medium"
                             rows={3}
                         />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="imageUrl" className="text-[10px] font-black uppercase tracking-widest text-mist">Image de l&apos;offre (URL)</Label>
+                        <div className="flex gap-4 items-center">
+                            <Input
+                                id="imageUrl"
+                                placeholder="https://images.unsplash.com/..."
+                                value={formData.imageUrl}
+                                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                                className="bg-white/5 border-white/10 rounded-xl focus:border-signal/50 focus:ring-signal/20 flex-1"
+                            />
+                            {formData.imageUrl && (
+                                <div className="h-10 w-10 rounded-lg overflow-hidden border border-white/10 bg-white/5 flex-shrink-0">
+                                    <img src={formData.imageUrl} alt="Preview" className="h-full w-full object-cover" />
+                                </div>
+                            )}
+                        </div>
+                        <p className="text-[10px] text-mist/50">Laissez vide pour utiliser l&apos;image par défaut.</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">

@@ -16,6 +16,8 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/008-seed-demo-data.yaml
   - include:
+      file: db/changelog/changes/009-add-image-url-to-offers.yaml
+  - include:
       file: db/changelog/changes/009-add-school-id-to-users.yaml
   - include:
       file: db/changelog/changes/010-fix-partner-schools.yaml

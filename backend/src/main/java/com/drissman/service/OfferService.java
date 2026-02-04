@@ -25,6 +25,8 @@ public class OfferService {
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .hours(request.getHours())
+                .permitType(request.getPermitType())
+                .imageUrl(request.getImageUrl())
                 .build();
 
         return offerRepository.save(offer)
@@ -52,6 +54,10 @@ public class OfferService {
                         offer.setPrice(request.getPrice());
                     if (request.getHours() != null)
                         offer.setHours(request.getHours());
+                    if (request.getPermitType() != null)
+                        offer.setPermitType(request.getPermitType());
+                    if (request.getImageUrl() != null)
+                        offer.setImageUrl(request.getImageUrl());
                     return offerRepository.save(offer);
                 })
                 .map(this::toDto);
@@ -68,6 +74,8 @@ public class OfferService {
                 .description(offer.getDescription())
                 .price(offer.getPrice())
                 .hours(offer.getHours())
+                .permitType(offer.getPermitType())
+                .imageUrl(offer.getImageUrl())
                 .build();
     }
 }
