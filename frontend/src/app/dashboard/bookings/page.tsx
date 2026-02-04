@@ -76,7 +76,15 @@ export default function BookingsPage() {
             {/* Empty State */}
             {!loading && !error && bookings.length === 0 && (
                 <div className="text-center py-20 bg-white/5 rounded-2xl border border-white/10">
-                    <p className="text-mist">Aucune réservation pour le moment.</p>
+                    <p className="text-mist mb-6">Aucune réservation pour le moment.</p>
+                    {!isSchoolAdmin && (
+                        <Link
+                            href="/search"
+                            className="px-6 py-3 rounded-xl bg-signal hover:bg-signal-dark text-asphalt text-xs font-black uppercase tracking-widest shadow-[0_10px_30px_rgba(255,193,7,0.1)] transition-all"
+                        >
+                            Trouver une auto-école
+                        </Link>
+                    )}
                 </div>
             )}
 
