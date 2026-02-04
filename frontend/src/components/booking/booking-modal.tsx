@@ -93,15 +93,13 @@ export function BookingModal({ isOpen, onClose, school, selectedOffer }: Booking
             // Simulation du délai de traitement du paiement
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // If we have a booking ID, update its status to CONFIRMED
-            if (bookingId) {
-                await bookingsService.updateStatus(bookingId, "CONFIRMED");
-            }
+            // Le statut reste PENDING - l'auto-école doit confirmer
+            // La facture a été créée côté backend lors de la création du booking
 
             setStep("SUCCESS");
-            toast.success("Réservation confirmée et payée !");
+            toast.success("Paiement enregistré ! En attente de confirmation de l'auto-école.");
         } catch (error) {
-            toast.error("Une erreur est survenue lors de la confirmation du paiement.");
+            toast.error("Une erreur est survenue lors de l'enregistrement du paiement.");
         } finally {
             setIsLoading(false);
         }
@@ -299,17 +297,22 @@ export function BookingModal({ isOpen, onClose, school, selectedOffer }: Booking
             {/* STEP 3: SUCCESS */}
             {step === "SUCCESS" && (
                 <div className="text-center py-6">
-                    <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Check className="h-10 w-10 text-green-600" />
+                    <div className="h-20 w-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <Clock className="h-10 w-10 text-yellow-600" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Inscription confirmée !</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Demande envoyée !</h3>
                     <p className="text-gray-600 mb-4 max-w-xs mx-auto">
-                        L&apos;auto-école <strong>{school.name}</strong> a reçu votre demande. Vous allez recevoir un SMS de confirmation.
+                        Votre paiement a été enregistré. <strong>{school.name}</strong> doit confirmer votre inscription.
                     </p>
+                    <div className="bg-yellow-50 p-3 rounded-lg mb-4 border border-yellow-200">
+                        <p className="text-yellow-800 font-medium text-sm">
+                            ⏳ Statut: <span className="font-bold">En attente de confirmation</span>
+                        </p>
+                    </div>
                     {formData.date && (
-                        <div className="bg-green-50 p-3 rounded-lg mb-6">
-                            <p className="text-green-800 font-medium">
-                                📅 Rendez-vous le {new Date(formData.date).toLocaleDateString('fr-FR', {
+                        <div className="bg-gray-50 p-3 rounded-lg mb-6">
+                            <p className="text-gray-700 font-medium">
+                                📅 Date souhaitée: {new Date(formData.date).toLocaleDateString('fr-FR', {
                                     weekday: 'long',
                                     day: 'numeric',
                                     month: 'long'
@@ -317,6 +320,7 @@ export function BookingModal({ isOpen, onClose, school, selectedOffer }: Booking
                             </p>
                         </div>
                     )}
+                    <p className="text-xs text-gray-500 mb-4">Vous recevrez un SMS une fois la confirmation reçue.</p>
                     <Button onClick={handleClose} className="w-full" size="lg">
                         Terminer
                     </Button>
