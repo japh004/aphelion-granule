@@ -6,7 +6,7 @@ import { useBookings, useAuth, useStudentProgress } from "@/hooks";
 
 export function StudentDashboard() {
     const { user } = useAuth();
-    const { bookings, loading: bookingsLoading } = useBookings(user?.id);
+    const { bookings, loading: bookingsLoading } = useBookings({ userId: user?.id });
     const { progress, loading: progressLoading } = useStudentProgress();
 
     const isLoading = bookingsLoading || progressLoading;
