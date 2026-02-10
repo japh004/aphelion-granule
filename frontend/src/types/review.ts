@@ -4,7 +4,7 @@ export interface Review {
     userName: string;
     schoolId: string;
     rating: number;
-    comment: string;
+    comment?: string;
     verified: boolean;
     createdAt: string;
 }
@@ -12,5 +12,5 @@ export interface Review {
 export interface CreateReviewPayload {
     schoolId: string;
     rating: number;
-    comment: string;
+    comment?: string;
 }

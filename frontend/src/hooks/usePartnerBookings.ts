@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import api from "@/lib/api/client";
-import { Booking } from "@/lib/api/bookings";
+import { Booking } from "@/lib/api";
 
 export function usePartnerBookings() {
     const [bookings, setBookings] = useState<Booking[]>([]);

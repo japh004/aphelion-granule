@@ -31,7 +31,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
                 data = await invoicesService.getBySchool(schoolId);
             } else if (userId) {
                 // Fetch invoices for the user
-                data = await invoicesService.getMyInvoices(userId);
+                data = await invoicesService.getMyInvoices();
             } else {
                 data = [];
             }

@@ -6,6 +6,12 @@ export interface Booking {
     offer: {
         id: string;
         name: string;
+        price: number;
+    };
+    user?: {
+        id: string;
+        name: string;
+        email: string;
     };
     date: string;
     time?: string;
@@ -32,4 +38,5 @@ export interface Invoice {
     paymentMethod?: 'MTN_MOMO' | 'ORANGE_MONEY' | 'CARD' | 'CASH';
     paymentReference?: string;
     paidAt?: string;
+    createdAt: string;
 }

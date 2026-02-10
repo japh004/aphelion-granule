@@ -7,6 +7,8 @@ export interface User {
     schoolId?: string;
 }
 
+export type AuthUser = User;
+
 export interface AuthResponse {
     user: User;
     token: string;
@@ -21,4 +23,5 @@ export interface RegisterPayload extends LoginPayload {
     firstName: string;
     lastName: string;
     role: 'STUDENT' | 'SCHOOL_ADMIN';
+    schoolName?: string;
 }

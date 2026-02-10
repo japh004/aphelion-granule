@@ -36,6 +36,11 @@ const STATUS_CONFIG = {
         label: "Remboursée",
         icon: RefreshCw,
         className: "bg-blue-500/10 text-blue-500 border-blue-500/20"
+    },
+    OVERDUE: {
+        label: "En retard",
+        icon: AlertCircle,
+        className: "bg-orange-500/10 text-orange-500 border-orange-500/20"
     }
 };
 

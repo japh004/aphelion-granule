@@ -28,7 +28,7 @@ export function useReviews(schoolId: string) {
     }, [fetchReviews, schoolId]);
 
     const createReview = useCallback(async (payload: CreateReviewPayload, userId: string) => {
-        const newReview = await reviewsService.create(payload, userId);
+        const newReview = await reviewsService.create(payload);
         setReviews(prev => [newReview, ...prev]);
         return newReview;
     }, []);
