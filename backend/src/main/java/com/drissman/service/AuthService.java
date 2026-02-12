@@ -10,7 +10,8 @@ import com.drissman.domain.repository.UserRepository;
 import com.drissman.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -26,10 +27,15 @@ public class AuthService {
         return userRepository.existsByEmail(request.getEmail())
                 .flatMap(exists -> {
                     if (exists) {
-                        return Mono.error(new RuntimeException("Email already exists"));
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists"));
                     }
 
-                    User.Role userRole = User.Role.valueOf(request.getRole().toUpperCase());
+                    User.Role userRole;
+                    try {
+                        userRole = User.Role.valueOf(request.getRole().toUpperCase());
+                    } catch (IllegalArgumentException | NullPointerException e) {
+                        userRole = User.Role.STUDENT; // Fallback to STUDENT if role is invalid or not yet in enum
+                    }
 
                     if (userRole == User.Role.SCHOOL_ADMIN) {
                         School school = School.builder()

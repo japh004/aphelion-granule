@@ -26,6 +26,7 @@ import { useAuth } from "@/hooks";
 const partnerNavigation = [
     { name: "Vue d'ensemble", href: "/dashboard", icon: LayoutDashboard },
     { name: "Réservations", href: "/dashboard/bookings", icon: Users },
+    { name: "Moniteurs", href: "/dashboard/monitors", icon: Users },
     { name: "Offres", href: "/dashboard/offers", icon: Tag },
     { name: "Mon Auto-école", href: "/dashboard/school", icon: School },
     { name: "Disponibilités", href: "/dashboard/availabilities", icon: Clock },

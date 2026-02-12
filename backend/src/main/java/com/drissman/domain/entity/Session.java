@@ -49,6 +49,9 @@ public class Session {
     @Column("meeting_point")
     private String meetingPoint;
 
+    @Column("pedagogical_notes")
+    private String pedagogicalNotes;
+
     @Column("created_at")
     private LocalDateTime createdAt;
 

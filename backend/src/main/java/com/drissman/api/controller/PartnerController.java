@@ -93,4 +93,18 @@ public class PartnerController {
                             .then();
                 });
     }
+
+    @GetMapping("/enrollments")
+    public Flux<com.drissman.api.dto.EnrollmentDto> getEnrollments(Principal principal) {
+        if (principal == null)
+            return Flux.empty();
+
+        UUID userId = UUID.fromString(principal.getName());
+        return userRepository.findById(userId)
+                .flatMapMany(user -> {
+                    if (user.getSchoolId() == null)
+                        return Flux.empty();
+                    return partnerService.getEnrollments(user.getSchoolId());
+                });
+    }
 }

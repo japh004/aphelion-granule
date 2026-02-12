@@ -47,3 +47,5 @@ databaseChangeLog:
       file: db/changelog/changes/021-create-sessions-table.yaml
   - include:
       file: db/changelog/changes/022-add-enrollment-id-to-invoices.yaml
+  - include:
+      file: db/changelog/changes/023-add-pedagogical-notes-to-sessions.yaml

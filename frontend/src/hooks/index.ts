@@ -10,4 +10,6 @@ export { usePartnerStats } from './usePartnerStats';
 export { usePartnerBookings } from './usePartnerBookings';
 export { useStudentProgress } from './useStudentProgress';
 export { useProfile } from './useProfile';
+export { useMonitors } from './useMonitors';
+export { useSessions } from './useSessions';
 

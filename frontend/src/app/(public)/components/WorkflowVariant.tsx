@@ -159,8 +159,8 @@ export default function WorkflowVariant() {
             {/* Section separator */}
             <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${isLight ? 'via-black/10' : 'via-white/10'} to-transparent`}></div>
 
-            {/* Subtle background texture */}
-            <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("/assets/noise.png")' }}></div>
+            {/* Subtle background texture overlay (CSS-based instead of missing png) */}
+            <div className={`absolute inset-0 opacity-[0.01] pointer-events-none ${isLight ? 'bg-black' : 'bg-white'}`} style={{ mixBlendMode: 'overlay' }}></div>
 
             {/* Horizontal gradient suggesting left→right progression */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-signal/[0.03] to-transparent pointer-events-none"></div>

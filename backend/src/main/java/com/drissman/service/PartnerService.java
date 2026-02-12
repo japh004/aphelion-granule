@@ -20,6 +20,8 @@ public class PartnerService {
 
         private final BookingRepository bookingRepository;
         private final OfferRepository offerRepository;
+        private final EnrollmentRepository enrollmentRepository;
+        private final UserRepository userRepository;
         private final BookingMapper bookingMapper;
 
         public Flux<BookingDto> getBookings(UUID schoolId) {
@@ -28,6 +30,28 @@ public class PartnerService {
                 }
                 return bookingRepository.findBySchoolId(schoolId)
                                 .flatMap(bookingMapper::enrichWithDetails);
+        }
+
+        public Flux<com.drissman.api.dto.EnrollmentDto> getEnrollments(UUID schoolId) {
+                if (schoolId == null) {
+                        return Flux.empty();
+                }
+                return enrollmentRepository.findBySchoolId(schoolId)
+                                .flatMap(enrollment -> Mono.zip(
+                                                userRepository.findById(enrollment.getUserId()),
+                                                offerRepository.findById(enrollment.getOfferId()))
+                                                .map(tuple -> com.drissman.api.dto.EnrollmentDto.builder()
+                                                                .id(enrollment.getId())
+                                                                .userId(enrollment.getUserId())
+                                                                .schoolId(enrollment.getSchoolId())
+                                                                .offerId(enrollment.getOfferId())
+                                                                .userName(tuple.getT1().getFirstName() + " "
+                                                                                + tuple.getT1().getLastName())
+                                                                .offerName(tuple.getT2().getName())
+                                                                .hoursPurchased(enrollment.getHoursPurchased())
+                                                                .hoursConsumed(enrollment.getHoursConsumed())
+                                                                .status(enrollment.getStatus().name())
+                                                                .build()));
         }
 
         public Mono<PartnerStatsDto> getStats(UUID schoolId) {
