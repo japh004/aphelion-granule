@@ -14,7 +14,9 @@ import {
     Clock,
     School,
     HelpCircle,
-    Gift
+    Gift,
+    Eye,
+    Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -42,10 +44,18 @@ const studentNavigation = [
     { name: "Paramètres", href: "/dashboard/settings", icon: Settings },
 ];
 
+const visitorNavigation = [
+    { name: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Explorer", href: "/", icon: Search },
+    { name: "Aide & Support", href: "/dashboard/help", icon: HelpCircle },
+    { name: "Paramètres", href: "/dashboard/settings", icon: Settings },
+];
+
 export function DashboardSidebar() {
     const { user, logout } = useAuth();
     const isPartner = user?.role === 'SCHOOL_ADMIN';
-    const navigation = isPartner ? partnerNavigation : studentNavigation;
+    const isVisitor = user?.role === 'VISITOR';
+    const navigation = isPartner ? partnerNavigation : isVisitor ? visitorNavigation : studentNavigation;
 
     return (
         <>
@@ -61,7 +71,7 @@ export function DashboardSidebar() {
                         </span>
                     </div>
                     <p className="text-xs text-mist mt-2 font-bold uppercase tracking-wider">
-                        {isPartner ? "Espace Auto-École" : "Espace Candidat"}
+                        {isPartner ? "Espace Auto-École" : isVisitor ? "Espace Visiteur" : "Espace Candidat"}
                     </p>
                 </div>
 
@@ -96,7 +106,8 @@ export function MobileSidebar() {
     const [open, setOpen] = useState(false);
     const { user, logout } = useAuth();
     const isPartner = user?.role === 'SCHOOL_ADMIN';
-    const navigation = isPartner ? partnerNavigation : studentNavigation;
+    const isVisitor = user?.role === 'VISITOR';
+    const navigation = isPartner ? partnerNavigation : isVisitor ? visitorNavigation : studentNavigation;
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>

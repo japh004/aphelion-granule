@@ -4,7 +4,7 @@ import { AuthSplitLayout } from "@/components/auth/auth-split-layout";
 import { SocialAuth } from "@/components/auth/social-auth";
 import Link from "next/link";
 import { useState, Suspense } from "react";
-import { User, Building2, Loader2 } from "lucide-react";
+import { User, Building2, Eye, Loader2 } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks";
@@ -15,7 +15,7 @@ function RegisterForm() {
     const { register } = useAuth();
     const defaultPlan = searchParams.get("plan");
 
-    const [role, setRole] = useState<'student' | 'partner'>(defaultPlan ? 'partner' : 'student');
+    const [role, setRole] = useState<'student' | 'partner' | 'visitor'>(defaultPlan ? 'partner' : 'student');
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
@@ -28,7 +28,7 @@ function RegisterForm() {
         setLoading(true);
 
         try {
-            const backendRole = role === 'partner' ? 'SCHOOL_ADMIN' : 'STUDENT';
+            const backendRole = role === 'partner' ? 'SCHOOL_ADMIN' : role === 'visitor' ? 'VISITOR' : 'STUDENT';
             await register(email, password, firstName, lastName, backendRole, schoolName);
             toast.success("Compte créé avec succès !");
             router.push("/dashboard");
@@ -44,20 +44,20 @@ function RegisterForm() {
     return (
         <AuthSplitLayout
             mode="register"
-            title={role === 'student' ? "Créez votre compte" : "Rejoignez le réseau"}
+            title={role === 'student' ? "Créez votre compte" : role === 'partner' ? "Rejoignez le réseau" : "Explorez Drissman"}
             description={role === 'student'
                 ? "Débutez votre formation dès aujourd'hui."
-                : "Digitalisez votre auto-école."
+                : role === 'partner' ? "Digitalisez votre auto-école." : "Découvrez nos auto-écoles partenaires."
             }
         >
             <form onSubmit={handleRegister} className="space-y-6">
 
                 {/* Role Selector */}
-                <div className="grid grid-cols-2 gap-4 p-1 bg-white/5 border border-white/10 rounded-xl mb-6">
+                <div className="grid grid-cols-3 gap-2 p-1 bg-white/5 border border-white/10 rounded-xl mb-6">
                     <button
                         type="button"
                         onClick={() => setRole('student')}
-                        className={`flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${role === 'student'
+                        className={`flex items-center justify-center gap-2 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all ${role === 'student'
                             ? "bg-signal text-asphalt shadow-md"
                             : "text-mist hover:text-snow"
                             }`}
@@ -68,13 +68,24 @@ function RegisterForm() {
                     <button
                         type="button"
                         onClick={() => setRole('partner')}
-                        className={`flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${role === 'partner'
+                        className={`flex items-center justify-center gap-2 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all ${role === 'partner'
                             ? "bg-signal text-asphalt shadow-md"
                             : "text-mist hover:text-snow"
                             }`}
                     >
                         <Building2 className="h-4 w-4" />
                         Auto-École
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setRole('visitor')}
+                        className={`flex items-center justify-center gap-2 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all ${role === 'visitor'
+                            ? "bg-signal text-asphalt shadow-md"
+                            : "text-mist hover:text-snow"
+                            }`}
+                    >
+                        <Eye className="h-4 w-4" />
+                        Visiteur
                     </button>
                 </div>
 
@@ -149,7 +160,7 @@ function RegisterForm() {
                     className="w-full bg-signal hover:bg-signal-dark text-asphalt font-bold py-3 rounded-xl shadow-[0_0_20px_rgba(255,193,7,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                     {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                    {loading ? "Création..." : (role === 'student' ? "Commencer gratuitement" : "Créer mon compte partenaire")}
+                    {loading ? "Création..." : (role === 'student' ? "Commencer gratuitement" : role === 'partner' ? "Créer mon compte partenaire" : "Explorer gratuitement")}
                 </button>
 
                 <div className="relative">

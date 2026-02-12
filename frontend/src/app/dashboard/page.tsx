@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks";
 import { PartnerDashboard } from "@/components/dashboard/partner-dashboard";
 import { StudentDashboard } from "@/components/dashboard/student-dashboard";
+import { VisitorDashboard } from "@/components/dashboard/visitor-dashboard";
 
 export default function DashboardPage() {
     const { user, loading } = useAuth();
@@ -22,5 +23,10 @@ export default function DashboardPage() {
         return <PartnerDashboard user={user} />;
     }
 
+    if (user?.role === 'VISITOR') {
+        return <VisitorDashboard user={user} />;
+    }
+
     return <StudentDashboard />;
 }
+

@@ -53,6 +53,7 @@ public class AuthService {
                                 })
                                 .map(this::createAuthResponse);
                     } else {
+                        // STUDENT and VISITOR: simple user creation without school
                         User user = User.builder()
                                 .email(request.getEmail())
                                 .password(passwordEncoder.encode(request.getPassword()))

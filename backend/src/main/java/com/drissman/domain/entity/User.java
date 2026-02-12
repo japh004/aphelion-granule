@@ -42,6 +42,7 @@ public class User {
 
     public enum Role {
         STUDENT,
-        SCHOOL_ADMIN
+        SCHOOL_ADMIN,
+        VISITOR
     }
 }
